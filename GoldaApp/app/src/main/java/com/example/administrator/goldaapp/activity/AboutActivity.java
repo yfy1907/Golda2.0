@@ -19,6 +19,7 @@ import com.example.administrator.goldaapp.adapter.SearchRedAdapter;
 import com.example.administrator.goldaapp.bean.AdGreenBean;
 import com.example.administrator.goldaapp.bean.AdRedBean;
 import com.example.administrator.goldaapp.common.MyLogger;
+import com.example.administrator.goldaapp.fragment.FragmentXuncha;
 import com.example.administrator.goldaapp.staticClass.StaticMember;
 import com.example.administrator.goldaapp.utils.CommonTools;
 import com.example.administrator.goldaapp.utils.MultiTool;
@@ -177,8 +178,8 @@ public class AboutActivity extends AppCompatActivity{
     // 根据范围筛选广告牌
     private List<AdGreenBean> searchGreenDataList(int length){
         List<AdGreenBean> dataList = new ArrayList<AdGreenBean>();
-        double lat =  HomeActivity.myLocationLL.latitude;
-        double lon = HomeActivity.myLocationLL.longitude;
+        double lat =  FragmentXuncha.myLocationLL.latitude;
+        double lon = FragmentXuncha.myLocationLL.longitude;
         if(null != greenList && greenList.size() > 0){
             for (int i = 0; i < greenList.size(); i++) {
                 AdGreenBean greenBean = greenList.get(i);
@@ -200,8 +201,8 @@ public class AboutActivity extends AppCompatActivity{
     // 根据范围筛选广告牌
     private List<AdRedBean> searchRedDataList(int length){
         List<AdRedBean> dataList = new ArrayList<AdRedBean>();
-        double lat =  HomeActivity.myLocationLL.latitude;
-        double lon = HomeActivity.myLocationLL.longitude;
+        double lat =  FragmentXuncha.myLocationLL.latitude;
+        double lon = FragmentXuncha.myLocationLL.longitude;
         if(null != redList && redList.size() > 0){
             for (int i = 0; i < redList.size(); i++) {
                 AdRedBean redBean = redList.get(i);

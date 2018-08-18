@@ -40,7 +40,8 @@
             android:layout_below="@id/tabTop"
             android:layout_marginTop="1dp"
             android:gravity="center"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:background="@color/white">
 
             <!-- 按钮 -->
             <!-- 使用FrameLayout，最主要的原因是使用它可以很容易的再添加一个消息提醒的小图片 -->

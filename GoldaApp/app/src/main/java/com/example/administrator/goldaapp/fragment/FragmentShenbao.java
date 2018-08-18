@@ -1,218 +1,329 @@
 package com.example.administrator.goldaapp.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.text.Html;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TabHost;
+import android.widget.TabWidget;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bigkoo.pickerview.OptionsPickerView;
 import com.example.administrator.goldaapp.R;
 import com.example.administrator.goldaapp.adapter.SpinnerCityAdapter;
+import com.example.administrator.goldaapp.bean.JsonBean;
 import com.example.administrator.goldaapp.bean.SpinnerCityListItem;
+import com.example.administrator.goldaapp.common.JsonFileReader;
 import com.example.administrator.goldaapp.db.DBManager;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 public class FragmentShenbao extends BaseFragment {
 
     /** Called when the activity is first created. */
-    private DBManager dbm;
-    private SQLiteDatabase db;
-    private Spinner spinner1 = null;
-    private Spinner spinner2=null;
-    private Spinner spinner3=null;
-    private String province=null;
-    private String city=null;
-    private String district=null;
+    private Activity activity;
+    private ViewPager viewPager = null;
+    private List<View> viewContainter = new ArrayList<View>();   //存放容器
+    private ViewPagerAdapter viewPagerAdapter = null;   //声明适配器
+    private TabHost mTabHost = null;
+    private TabWidget mTabWidget = null;
 
-    private Context context;
+    // 省、市、区
+    private ArrayList<JsonBean> options1Items = new ArrayList<JsonBean>();
+    private ArrayList<ArrayList<String>> options2Items = new ArrayList<ArrayList<String>>();
+    private ArrayList<ArrayList<ArrayList<String>>> options3Items = new ArrayList<ArrayList<ArrayList<String>>>();
+
+
+    // 广告牌类型
+    private ArrayList<JsonBean> optionsType1Items = new ArrayList<JsonBean>();
+    private ArrayList<ArrayList<String>> optionsType2Items = new ArrayList<ArrayList<String>>();
+    private ArrayList<ArrayList<ArrayList<String>>> optionsType3Items = new ArrayList<ArrayList<ArrayList<String>>>();
+
+    private Unbinder unbinder;
+    @BindView(R.id.tv_city_area)
+    TextView tv_city_area;  // 省份、城市、地区
+    @BindView(R.id.edittext_adress)
+    EditText edittext_adress;   // 设置地点
+    @BindView(R.id.edittext_area_line)
+    EditText edittext_area_line;    // 路段
+    @BindView(R.id.edittext_company)
+    EditText edittext_company; //申请公司名称
+    @BindView(R.id.edittext_company_address)
+    EditText edittext_company_address;          // 公司地址
+    @BindView(R.id.edittext_person)
+    EditText edittext_person; // 法定代表人
+    @BindView(R.id.edittext_contact)
+    EditText edittext_contact; // 联系电话号码
+    @BindView(R.id.edittext_process_contact)
+    EditText edittext_process_contact; // 联系人
+    @BindView(R.id.edittext_process_tel)
+    EditText edittext_process_tel; // 联系人电话号码
+    @BindView(R.id.edittext_email)
+    EditText edittext_email; // 联系邮箱
+    @BindView(R.id.tv_icon_type)
+    TextView tv_icon_type; // 类型
+    @BindView(R.id.edittext_material)
+    EditText edittext_material; // 广告牌材质
+    @BindView(R.id.edittext_wt)
+    EditText edittext_wt; // 外凸(米)
+    @BindView(R.id.edittext_model)
+    EditText edittext_model; // 数量(个)
+    @BindView(R.id.edittext_facenum)
+    EditText edittext_facenum; // 展示面数(面)
+    @BindView(R.id.edittext_ad_x)
+    EditText edittext_ad_x; // 长度(米)
+    @BindView(R.id.edittext_ad_y)
+    EditText edittext_ad_y; // 宽度(米)
+    @BindView(R.id.edittext_ad_s)
+    EditText edittext_ad_s; // 面积(平方米)
+    @BindView(R.id.edittext_li_height)
+    EditText edittext_li_height; // 离地高度(米)
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_fragment_shenbao, container,false);
-        // 加载fragment的布局控件（通过layout根元素加载)
-        spinner1=(Spinner)rootView.findViewById(R.id.spinner1);
-        spinner2=(Spinner)rootView.findViewById(R.id.spinner2);
-        spinner3=(Spinner)rootView.findViewById(R.id.spinner3);
-        spinner1.setPrompt("省");
-        spinner2.setPrompt("城市");
-        spinner3.setPrompt("地区");
 
-        return rootView;
+        activity = getActivity();
+
+        View view = inflater.inflate(R.layout.activity_fragment_shenbao, container,false);
+        // 加载fragment的布局控件（通过layout根元素加载)
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ButterKnife.bind(this.activity);
+        initMyTabHost(view);
+
+        // 绑定组件
+        viewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        initViewPagerContainter();  //初始viewPager
+        viewPagerAdapter = new ViewPagerAdapter();
+        //设置adapter的适配器
+        viewPager.setAdapter(viewPagerAdapter);
+        //设置viewPager的监听器
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+            //当 滑动 切换时
+            @Override
+            public void onPageSelected(int position) {
+                mTabWidget.setCurrentTab(position);
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        //TabHost的监听事件
+        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+                if(tabId.equals("tab1")){
+                    viewPager.setCurrentItem(0);
+                }else{
+                    viewPager.setCurrentItem(1);
+                }
+            }
+        });
+
+        //解决开始时不显示viewPager
+        mTabHost.setCurrentTab(1);
+        mTabHost.setCurrentTab(0);
+
+        initJsonData();
+
+        initAdTypeJsonData();
+    }
+
+    // 设置监听
+    private void setListener() {
+        tv_city_area.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPickerView();
+            }
+        });
+
+        tv_icon_type.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPickerViewAdType();
+            }
+        });
+    }
+
+    /**
+     * 选择省、市、区级联
+     */
+    private void showPickerView() {
+        if(options1Items.size() == 0){
+            Toast.makeText(this.activity,"数据未加载。",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        OptionsPickerView pvOptions = new OptionsPickerView.Builder(activity, new OptionsPickerView.OnOptionsSelectListener() {
+            @Override
+            public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                //返回的分别是三个级别的选中位置
+                String text = options1Items.get(options1).getPickerViewText() +"\n"+
+                        options2Items.get(options1).get(options2) +"\n"+
+                        options3Items.get(options1).get(options2).get(options3);
+                tv_city_area.setText(text);
+            }
+        }).setTitleText("")
+                .setDividerColor(Color.GRAY)
+                .setTextColorCenter(Color.GRAY)
+                .setContentTextSize(14)
+                .setOutSideCancelable(false)
+                .build();
+          /*pvOptions.setPicker(options1Items);//一级选择器
+        pvOptions.setPicker(options1Items, options2Items);//二级选择器*/
+        pvOptions.setPicker(options1Items, options2Items, options3Items);//三级选择器
+        pvOptions.show();
+    }
+
+    /**
+     * 选择广告牌级联
+     */
+    private void showPickerViewAdType() {
+        if(optionsType1Items.size() == 0){
+            Toast.makeText(this.activity,"数据未加载。",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        OptionsPickerView pvOptions = new OptionsPickerView.Builder(activity, new OptionsPickerView.OnOptionsSelectListener() {
+            @Override
+            public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                //返回的分别是三个级别的选中位置
+                String text = optionsType1Items.get(options1).getPickerViewText() + "\n"+
+                        optionsType2Items.get(options1).get(options2) +"\n"+
+                        optionsType3Items.get(options1).get(options2).get(options3);
+                tv_icon_type.setText(Html.fromHtml(text));
+            }
+        }).setTitleText("")
+                .setDividerColor(Color.GRAY)
+                .setTextColorCenter(Color.GRAY)
+                .setContentTextSize(14)
+                .setOutSideCancelable(false)
+                .build();
+          /*pvOptions.setPicker(options1Items);//一级选择器
+        pvOptions.setPicker(options1Items, options2Items);//二级选择器*/
+        pvOptions.setPicker(optionsType1Items, optionsType2Items, optionsType3Items);//三级选择器
+        pvOptions.show();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        context = getActivity();
-        initSpinner1();
+
     }
 
-    public void initSpinner1(){
-        dbm = new DBManager(context);
-        dbm.openDatabase();
-        db = dbm.getDatabase();
-        List<SpinnerCityListItem> list = new ArrayList<SpinnerCityListItem>();
-
-        try {
-            String sql = "select * from province";
-            Cursor cursor = db.rawQuery(sql,null);
-            cursor.moveToFirst();
-            while (!cursor.isLast()){
-                String code=cursor.getString(cursor.getColumnIndex("code"));
-                byte bytes[]=cursor.getBlob(2);
-                String name=new String(bytes,"gbk");
-                SpinnerCityListItem myListItem=new SpinnerCityListItem();
-                myListItem.setName(name);
-                myListItem.setPcode(code);
-                list.add(myListItem);
-                cursor.moveToNext();
-            }
-            String code=cursor.getString(cursor.getColumnIndex("code"));
-            byte bytes[]=cursor.getBlob(2);
-            String name=new String(bytes,"gbk");
-            SpinnerCityListItem myListItem=new SpinnerCityListItem();
-            myListItem.setName(name);
-            myListItem.setPcode(code);
-            list.add(myListItem);
-            if(null != cursor){
-                cursor.close();
-            }
-        } catch (Exception e) {
-        }
-        dbm.closeDatabase();
-        db.close();
-
-        SpinnerCityAdapter myAdapter = new SpinnerCityAdapter(context,list);
-        spinner1.setAdapter(myAdapter);
-        spinner1.setOnItemSelectedListener(new SpinnerOnSelectedListener1());
-    }
-    public void initSpinner2(String pcode){
-        dbm = new DBManager(context);
-        dbm.openDatabase();
-        db = dbm.getDatabase();
-        List<SpinnerCityListItem> list = new ArrayList<>();
-
-        try {
-            String sql = "select * from city where pcode='"+pcode+"'";
-            Cursor cursor = db.rawQuery(sql,null);
-            cursor.moveToFirst();
-            while (!cursor.isLast()){
-                String code=cursor.getString(cursor.getColumnIndex("code"));
-                byte bytes[]=cursor.getBlob(2);
-                String name=new String(bytes,"gbk");
-                SpinnerCityListItem myListItem = new SpinnerCityListItem();
-                myListItem.setName(name);
-                myListItem.setPcode(code);
-                list.add(myListItem);
-                cursor.moveToNext();
-            }
-            String code=cursor.getString(cursor.getColumnIndex("code"));
-            byte bytes[]=cursor.getBlob(2);
-            String name=new String(bytes,"gbk");
-            SpinnerCityListItem myListItem=new SpinnerCityListItem();
-            myListItem.setName(name);
-            myListItem.setPcode(code);
-            list.add(myListItem);
-
-        } catch (Exception e) {
-        }
-        dbm.closeDatabase();
-        db.close();
-
-        SpinnerCityAdapter myAdapter = new SpinnerCityAdapter(context,list);
-        spinner2.setAdapter(myAdapter);
-        spinner2.setOnItemSelectedListener(new SpinnerOnSelectedListener2());
-    }
-    public void initSpinner3(String pcode){
-        dbm = new DBManager(context);
-        dbm.openDatabase();
-        db = dbm.getDatabase();
-        List<SpinnerCityListItem> list = new ArrayList<SpinnerCityListItem>();
-
-        try {
-            String sql = "select * from district where pcode='"+pcode+"'";
-            Cursor cursor = db.rawQuery(sql,null);
-            cursor.moveToFirst();
-            while (!cursor.isLast()){
-                String code=cursor.getString(cursor.getColumnIndex("code"));
-                byte bytes[]=cursor.getBlob(2);
-                String name=new String(bytes,"gbk");
-                SpinnerCityListItem myListItem=new SpinnerCityListItem();
-                myListItem.setName(name);
-                myListItem.setPcode(code);
-                list.add(myListItem);
-                cursor.moveToNext();
-            }
-            String code=cursor.getString(cursor.getColumnIndex("code"));
-            byte bytes[]=cursor.getBlob(2);
-            String name=new String(bytes,"gbk");
-            SpinnerCityListItem myListItem=new SpinnerCityListItem();
-            myListItem.setName(name);
-            myListItem.setPcode(code);
-            list.add(myListItem);
-
-        } catch (Exception e) {
-        }
-        dbm.closeDatabase();
-        db.close();
-
-        SpinnerCityAdapter myAdapter = new SpinnerCityAdapter(context,list);
-        spinner3.setAdapter(myAdapter);
-        spinner3.setOnItemSelectedListener(new SpinnerOnSelectedListener3());
+    //初始化TabHost
+    public void initMyTabHost(View view){
+        //绑定id
+        mTabHost = (TabHost) view.findViewById(android.R.id.tabhost);
+        mTabHost.setup();
+        mTabWidget = mTabHost.getTabWidget();
+        /**
+         * newTabSpec（）   就是给每个Tab设置一个ID
+         * setIndicator()   每个Tab的标题
+         * setCount()       每个Tab的标签页布局
+         */
+        mTabHost.addTab(mTabHost.newTabSpec("tab1").setContent(R.id.tab1).setIndicator("基本信息"));
+        mTabHost.addTab(mTabHost.newTabSpec("tab2").setContent(R.id.tab2).setIndicator("图片信息"));
     }
 
-    class SpinnerOnSelectedListener1 implements AdapterView.OnItemSelectedListener {
+    //初始化viewPager
+    public void initViewPagerContainter(){
+        //建立两个view的样式，并找到他们
+        View view_1 = LayoutInflater.from(activity.getApplicationContext()).inflate(R.layout.fragment_shenbao_viewpage1,null);
+        View view_2 = LayoutInflater.from(activity.getApplicationContext()).inflate(R.layout.fragment_shenbao_viewpage2,null);
 
-        public void onItemSelected(AdapterView<?> adapterView, View view, int position,
-                                   long id) {
-            province=((SpinnerCityListItem) adapterView.getItemAtPosition(position)).getName();
-            String pcode =((SpinnerCityListItem) adapterView.getItemAtPosition(position)).getPcode();
+        unbinder = ButterKnife.bind(this, view_1);
 
-            initSpinner2(pcode);
-            initSpinner3(pcode);
-        }
+        //加入ViewPage的容器
+        viewContainter.add(view_1);
+        viewContainter.add(view_2);
 
-        public void onNothingSelected(AdapterView<?> adapterView) {
-            // TODO Auto-generated method stub
-        }
+
+        // 设置选择省市区监听
+        setListener();
+
     }
-    class SpinnerOnSelectedListener2 implements AdapterView.OnItemSelectedListener {
 
-        public void onItemSelected(AdapterView<?> adapterView, View view, int position,
-                                   long id) {
-            city=((SpinnerCityListItem) adapterView.getItemAtPosition(position)).getName();
-            String pcode =((SpinnerCityListItem) adapterView.getItemAtPosition(position)).getPcode();
+    //内部类实现viewpager的适配器
+    private class ViewPagerAdapter extends PagerAdapter {
 
-            initSpinner3(pcode);
+        //该方法 决定 并 返回 viewpager中组件的数量
+        @Override
+        public int getCount() {
+            return viewContainter.size();
         }
 
-        public void onNothingSelected(AdapterView<?> adapterView) {
-            // TODO Auto-generated method stub
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        //滑动切换的时候，消除当前组件
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView(viewContainter.get(position));
+        }
+
+        //每次滑动的时候生成的组件
+        public Object instantiateItem(ViewGroup container, int position) {
+            container.addView(viewContainter.get(position));
+            return viewContainter.get(position);
         }
     }
 
-    class SpinnerOnSelectedListener3 implements AdapterView.OnItemSelectedListener {
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
 
-        public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-            district=((SpinnerCityListItem) adapterView.getItemAtPosition(position)).getName();
-            // Toast.makeText(context, province+" "+city+" "+district, Toast.LENGTH_LONG).show();
-        }
-
-        public void onNothingSelected(AdapterView<?> adapterView) {
-            // TODO Auto-generated method stub
-        }
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return false;
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (unbinder != null) {
+            unbinder.unbind();
+        }
+        super.onDestroyView();
+    }
+
 
     // 定义一个消息处理handler
     private Handler mHandler = new Handler() {
@@ -224,7 +335,124 @@ public class FragmentShenbao extends BaseFragment {
         }
     };
 
+    /**
+     * 加载省、市、区级联数据
+     */
+    private void initJsonData() {   //解析数据
+        /**
+         * 注意：assets 目录下的Json文件仅供参考，实际使用可自行替换文件
+         * 关键逻辑在于循环体
+         *
+         * */
+        //  获取json数据
+        String JsonData = JsonFileReader.getJson(activity, "province_data.json");
+        ArrayList<JsonBean> jsonBean = parseData(JsonData);//用Gson 转成实体
+        /**
+         * 添加省份数据
+         *
+         * 注意：如果是添加的JavaBean实体，则实体类需要实现 IPickerViewData 接口，
+         * PickerView会通过getPickerViewText方法获取字符串显示出来。
+         */
+        options1Items = jsonBean;
+        for (int i = 0; i < jsonBean.size(); i++) {//遍历省份
+            ArrayList<String> CityList = new ArrayList<>();//该省的城市列表（第二级）
+            ArrayList<ArrayList<String>> Province_AreaList = new ArrayList<>();//该省的所有地区列表（第三极）
 
+            for (int c = 0; c < jsonBean.get(i).getCityList().size(); c++) {//遍历该省份的所有城市
+                String CityName = jsonBean.get(i).getCityList().get(c).getName();
+                CityList.add(CityName);//添加城市
 
+                ArrayList<String> City_AreaList = new ArrayList<>();//该城市的所有地区列表
+
+                //如果无地区数据，建议添加空字符串，防止数据为null 导致三个选项长度不匹配造成崩溃
+                if (jsonBean.get(i).getCityList().get(c).getArea() == null
+                        || jsonBean.get(i).getCityList().get(c).getArea().size() == 0) {
+                    City_AreaList.add("");
+                } else {
+                    for (int d = 0; d < jsonBean.get(i).getCityList().get(c).getArea().size(); d++) {//该城市对应地区所有数据
+                        String AreaName = jsonBean.get(i).getCityList().get(c).getArea().get(d);
+                        City_AreaList.add(AreaName);//添加该城市所有地区数据
+                    }
+                }
+                Province_AreaList.add(City_AreaList);//添加该省所有地区数据
+            }
+            /**
+             * 添加城市数据
+             */
+            options2Items.add(CityList);
+            /**
+             * 添加地区数据
+             */
+            options3Items.add(Province_AreaList);
+        }
+    }
+
+    /**
+     * 加载广告牌类型级联数据
+     */
+    private void initAdTypeJsonData() {   //解析数据
+        /**
+         * 注意：assets 目录下的Json文件仅供参考，实际使用可自行替换文件
+         * 关键逻辑在于循环体
+         *
+         * */
+        //  获取json数据
+        String JsonData = JsonFileReader.getJson(activity, "ad_types_data.json");
+        ArrayList<JsonBean> jsonBean = parseData(JsonData);//用Gson 转成实体
+        /**
+         * 添加省份数据
+         *
+         * 注意：如果是添加的JavaBean实体，则实体类需要实现 IPickerViewData 接口，
+         * PickerView会通过getPickerViewText方法获取字符串显示出来。
+         */
+        optionsType1Items = jsonBean;
+        for (int i = 0; i < jsonBean.size(); i++) {//遍历省份
+            ArrayList<String> CityList = new ArrayList<>();//该省的城市列表（第二级）
+            ArrayList<ArrayList<String>> Province_AreaList = new ArrayList<>();//该省的所有地区列表（第三极）
+
+            for (int c = 0; c < jsonBean.get(i).getCityList().size(); c++) {//遍历该省份的所有城市
+                String CityName = jsonBean.get(i).getCityList().get(c).getName();
+                CityList.add(CityName);//添加城市
+
+                ArrayList<String> City_AreaList = new ArrayList<>();//该城市的所有地区列表
+
+                //如果无地区数据，建议添加空字符串，防止数据为null 导致三个选项长度不匹配造成崩溃
+                if (jsonBean.get(i).getCityList().get(c).getArea() == null
+                        || jsonBean.get(i).getCityList().get(c).getArea().size() == 0) {
+                    City_AreaList.add("");
+                } else {
+                    for (int d = 0; d < jsonBean.get(i).getCityList().get(c).getArea().size(); d++) {//该城市对应地区所有数据
+                        String AreaName = jsonBean.get(i).getCityList().get(c).getArea().get(d);
+                        City_AreaList.add(AreaName);//添加该城市所有地区数据
+                    }
+                }
+                Province_AreaList.add(City_AreaList);//添加该省所有地区数据
+            }
+            /**
+             * 添加城市数据
+             */
+            optionsType2Items.add(CityList);
+            /**
+             * 添加地区数据
+             */
+            optionsType3Items.add(Province_AreaList);
+        }
+    }
+
+    public ArrayList<JsonBean> parseData(String result) {//Gson 解析
+        ArrayList<JsonBean> detail = new ArrayList<>();
+        try {
+            JSONArray data = new JSONArray(result);
+            Gson gson = new Gson();
+            for (int i = 0; i < data.length(); i++) {
+                JsonBean entity = gson.fromJson(data.optJSONObject(i).toString(), JsonBean.class);
+                detail.add(entity);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // mHandler.sendEmptyMessage(MSG_LOAD_FAILED);
+        }
+        return detail;
+    }
 
 }

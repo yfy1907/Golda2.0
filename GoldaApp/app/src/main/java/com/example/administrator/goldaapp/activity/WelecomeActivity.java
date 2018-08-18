@@ -172,7 +172,8 @@ public class WelecomeActivity extends Activity implements ActivityCompat.OnReque
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Intent i = new Intent(WelecomeActivity.this,HomeActivity.class);
+                    //Intent i = new Intent(WelecomeActivity.this,HomeActivity.class);
+                    Intent i = new Intent(WelecomeActivity.this,MainFragmentActivity.class);
                     startActivity(i);
                     finish();
                     overridePendingTransition(R.anim.anim_in,R.anim.anim_out);
