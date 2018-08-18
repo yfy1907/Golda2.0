@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.MainFragmentActivity" >
+
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottomArea"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:background="#FFFFFF" >
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/bottomArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        >
+
+        <!-- tab的分割线 -->
+        <ImageView
+            android:id="@+id/tabTop"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#B6B6B6" />
+
+
+        <!-- tab的四个按钮 -->
+        <LinearLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tabTop"
+            android:layout_marginTop="1dp"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <!-- 按钮 -->
+            <!-- 使用FrameLayout，最主要的原因是使用它可以很容易的再添加一个消息提醒的小图片 -->
+            <FrameLayout
+                android:id="@+id/frame_layout_shenbao"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:paddingTop="3dp"
+                android:paddingBottom="2dp">
+
+                <ImageView
+                    android:id="@+id/imageview_shenbao"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center"
+                    android:src="@drawable/icon_menu_1_on"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/textview_shenbao"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/main_fragment_menu_1"
+                    android:textColor="@color/blue"
+                    android:layout_gravity="center"
+                    android:textSize="18sp" />
+
+                <!--android:layout_gravity="bottom|center"-->
+
+            </FrameLayout>
+
+            <!-- 巡查按钮 -->
+            <FrameLayout
+                android:id="@+id/frame_layout_xuncha"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:paddingTop="3dp"
+                android:paddingBottom="2dp">
+
+                <ImageView
+                    android:id="@+id/imageview_xuncha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center"
+                    android:src="@drawable/icon_menu_2_off"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/textview_xuncha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/main_fragment_menu_2"
+                    android:textColor="#999999"
+                    android:layout_gravity="center"
+                    android:textSize="18sp" />
+            </FrameLayout>
+
+            <!-- 广告牌按钮 -->
+            <FrameLayout
+                android:id="@+id/frame_layout_board"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:paddingTop="3dp"
+                android:paddingBottom="2dp">
+
+                <ImageView
+                    android:id="@+id/imageview_board"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center"
+                    android:src="@drawable/icon_menu_3_off"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/textview_board"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/main_fragment_menu_3"
+                    android:textColor="#999999"
+                    android:layout_gravity="center"
+                    android:textSize="18sp" />
+            </FrameLayout>
+
+            <!-- 我按钮 -->
+            <FrameLayout
+                android:id="@+id/frame_layout_me"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:paddingTop="3dp"
+                android:paddingBottom="2dp">
+
+                <ImageView
+                    android:id="@+id/imageview_me"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center"
+                    android:src="@drawable/icon_menu_4_off"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/textview_me"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/main_fragment_menu_4"
+                    android:textColor="#999999"
+                    android:layout_gravity="center"
+                    android:textSize="18sp" />
+            </FrameLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>
