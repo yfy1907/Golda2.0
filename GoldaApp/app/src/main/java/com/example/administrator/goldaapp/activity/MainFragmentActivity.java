@@ -1,21 +1,28 @@
 package com.example.administrator.goldaapp.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.administrator.goldaapp.R;
 import com.example.administrator.goldaapp.fragment.FragmentBoard;
 import com.example.administrator.goldaapp.fragment.FragmentShenbao;
 import com.example.administrator.goldaapp.fragment.FragmentMe;
 import com.example.administrator.goldaapp.fragment.FragmentXuncha;
+import com.example.administrator.goldaapp.utils.AppManager;
 
 public class MainFragmentActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -35,11 +42,20 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
     // tab中的四个帧布局中的四个图片对应文字
     private TextView textview_shenbao, textview_xuncha, textview_board,textview_me;
 
+    /**
+     * 是否退出程序 默认false
+     **/
+    private static boolean isExit = false;
+    private Handler home_exit_handler = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_main);
 
+        AppManager.getAppManager().finishActivity(MainFragmentActivity.class);
+        Log.i("", "#### onCreate。。。。————————————————————>>>>>>>>>");
+        AppManager.getAppManager().addActivity(this);
         // 初始化组件
         initView();
 
@@ -228,4 +244,38 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
             Log.i("" ,"选中wo 。");
         }
     }
+
+    /**
+     * TODO 返回键值事件
+     */
+    @SuppressLint("WrongConstant")
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        /** 获取网页标题 **/
+        // String name = this.getTextEditValue(this.titlebar_name_text);
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            if (!isExit) {
+                isExit = true;
+                Toast.makeText(this, "再按一次退出程序!",
+                        Toast.LENGTH_SHORT).show();
+                this.home_exit_handler.sendEmptyMessageDelayed(0, 2500);
+            } else {
+                AppManager.getAppManager().finishAllActivity();
+                Intent localIntent2 = new Intent("android.intent.action.MAIN");
+                localIntent2.addCategory("android.intent.category.HOME");
+                localIntent2.setFlags(67108864);
+                startActivity(localIntent2);
+                new Handler().postDelayed(new Runnable()
+                {
+                    public void run()
+                    {
+                        System.exit(0);
+                    }
+                } , 20L);
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        }
+        return false;
+    }
+
 }
