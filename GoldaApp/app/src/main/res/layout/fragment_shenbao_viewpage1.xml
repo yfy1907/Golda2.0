@@ -66,7 +66,9 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="4.0dp"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -91,7 +93,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -116,7 +119,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -141,7 +145,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -166,7 +171,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -192,7 +198,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -217,7 +224,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -242,7 +250,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -268,7 +277,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -322,7 +332,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -348,7 +359,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -373,7 +385,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -399,7 +412,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -425,7 +439,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -451,7 +466,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -476,7 +492,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -502,7 +519,8 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:background="@color/white" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
