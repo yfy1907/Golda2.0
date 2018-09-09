@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -183,8 +184,20 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                 mTabWidget.setCurrentTab(position);
             }
             @Override
-            public void onPageScrollStateChanged(int state) {
+            public void onPageScrollStateChanged(int arg0) {
+                //arg0 ==1的时表示正在滑动，arg0==2的时表示滑动完毕了，arg0==0的时表示什么都没做。
+                if(arg0 == 0){
 
+                }else if(arg0 == 1){
+
+                }else if(arg0 == 2){
+                    int viewIndex = viewPager.getCurrentItem();
+                    if(viewIndex == 0){
+                        mTabHost.setCurrentTab(0);
+                    }else{
+                        mTabHost.setCurrentTab(1);
+                    }
+                }
             }
         });
         //TabHost的监听事件
@@ -196,6 +209,8 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                 }else{
                     viewPager.setCurrentItem(1);
                 }
+                // 切换Tab样式
+                updateTabStyle();
             }
         });
 
@@ -311,10 +326,50 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
          * setIndicator()   每个Tab的标题
          * setCount()       每个Tab的标签页布局
          */
+
+//        View tab_view1 = LayoutInflater.from(activity.getApplicationContext()).inflate(R.layout.tabhost_tag,null);
+//        TextView tab_title1 = (TextView) tab_view1.findViewById(R.id.tab_lable);
+//        tab_title1.setText("基本信息");
+//
+//        View tab_view2 = LayoutInflater.from(activity.getApplicationContext()).inflate(R.layout.tabhost_tag,null);
+//        TextView tab_title2 = (TextView) tab_view2.findViewById(R.id.tab_lable);
+//        tab_title2.setText("图片信息");
+//
+//        mTabHost.addTab(mTabHost.newTabSpec("tab1").setContent(R.id.tab1).setIndicator(tab_view1));
+//        mTabHost.addTab(mTabHost.newTabSpec("tab2").setContent(R.id.tab2).setIndicator(tab_view2));
+
         mTabHost.addTab(mTabHost.newTabSpec("tab1").setContent(R.id.tab1).setIndicator("基本信息"));
         mTabHost.addTab(mTabHost.newTabSpec("tab2").setContent(R.id.tab2).setIndicator("图片信息"));
+
+//        for (int i = 0; i < mTabWidget.getChildCount(); i++) {
+//            TextView localTextView = (TextView)mTabWidget.getChildAt(i).findViewById(android.R.id.title);
+//            localTextView.setTextSize(16.0F);
+//            localTextView.setTextColor(getResources().getColorStateList(android.R.color.tab_indicator_text));
+//        }
+
+        updateTabStyle();
     }
 
+    private void updateTabStyle(){
+        TabWidget localTabWidget = this.mTabHost.getTabWidget();
+        int i = 0;
+        //设置选项卡title字体大小和样式
+        while(i < localTabWidget.getChildCount()){
+            TextView localTextView = (TextView)localTabWidget.getChildAt(i).findViewById(android.R.id.title);
+            localTextView.setTextSize(14.0F);
+
+            //设置背景图
+//	        localTabWidget.getChildAt(i).setBackgroundResource(R.drawable.tabwidget_selector);
+            if (mTabHost.getCurrentTab() == i) {
+                localTextView.setTextColor(getResources().getColorStateList(R.color.orange));
+                localTabWidget.getChildAt(i).setBackgroundResource(R.color.white);
+            }else {
+                localTextView.setTextColor(this.getResources().getColorStateList(R.color.heise));
+                localTabWidget.getChildAt(i).setBackgroundResource(R.color.gray_light);
+            }
+            i++;
+        }
+    }
 
     //初始化viewPager
     public void initViewPagerContainter(){

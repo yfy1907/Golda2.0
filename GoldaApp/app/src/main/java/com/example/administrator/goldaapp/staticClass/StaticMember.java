@@ -68,6 +68,7 @@ public class StaticMember {
     public static final int ADLIST_RED = 102;
     public static final int USERLIST = 103;
     public static final int SEARCH = 104;
+    public static final int BOARD_LIST = 105;
 
     public static final int LENGTH = 200;//当前位置与目标点的最远距离
     public static final int CLICK_LENGTH = 25;//点击marker显示周围x米的范围的marker

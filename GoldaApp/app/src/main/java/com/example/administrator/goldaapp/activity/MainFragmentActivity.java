@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -65,6 +66,11 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
         // 初始化所有fragment
         initFragment();
 
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setNavigationBarColor(Color.parseColor("#000000"));
+            getWindow().setNavigationBarColor(Color.BLACK);
+        }
     }
 
     /**
@@ -154,6 +160,7 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
 
             case R.id.frame_layout_board:
                 // 点击广告牌tab
+                Log.i("","点击广告牌了。。。。。。");
                 clickTab(boardFragment);
                 break;
 
@@ -222,25 +229,25 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
     private void changeTabStyle(Fragment tabFragment) {
         if (tabFragment instanceof FragmentShenbao) {
             imageview_shenbao.setImageResource(R.drawable.icon_menu_1_on);
-            textview_shenbao.setTextColor(Color.parseColor("#FF006BB9"));
+            textview_shenbao.setTextColor(Color.parseColor("#FFF05B48"));
             Log.i("" ,"选中申报。");
         }
 
         if (tabFragment instanceof FragmentXuncha) {
             imageview_xuncha.setImageResource(R.drawable.icon_menu_2_on);
-            textview_xuncha.setTextColor(Color.parseColor("#FF006BB9"));
+            textview_xuncha.setTextColor(Color.parseColor("#FFF05B48"));
             Log.i("" ,"选中巡查。");
         }
 
         if (tabFragment instanceof FragmentBoard) {
             imageview_board.setImageResource(R.drawable.icon_menu_3_on);
-            textview_board.setTextColor(Color.parseColor("#FF006BB9"));
+            textview_board.setTextColor(Color.parseColor("#FFF05B48"));
             Log.i("" ,"选中广告牌。");
         }
 
         if (tabFragment instanceof FragmentMe) {
             imageview_me.setImageResource(R.drawable.icon_menu_4_on);
-            textview_me.setTextColor(Color.parseColor("#FF006BB9"));
+            textview_me.setTextColor(Color.parseColor("#FFF05B48"));
             Log.i("" ,"选中wo 。");
         }
     }

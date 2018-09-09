@@ -17,6 +17,11 @@
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowNoTitle">true</item>
     </style>
+    <style name="MyAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
+    </style>
+
     <!--设置页面跳转-->
     <style name="Anim_fade" parent="MyStartTheme">
         <item name="android:windowAnimationStyle">@style/fade</item>
