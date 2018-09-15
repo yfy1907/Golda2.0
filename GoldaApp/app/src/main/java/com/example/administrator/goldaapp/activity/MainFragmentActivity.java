@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -47,7 +48,7 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
      * 是否退出程序 默认false
      **/
     private static boolean isExit = false;
-    private Handler home_exit_handler = null;
+    public Handler home_exit_handler = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +67,18 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
         // 初始化所有fragment
         initFragment();
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setNavigationBarColor(Color.parseColor("#000000"));
             getWindow().setNavigationBarColor(Color.BLACK);
         }
+
+        this.home_exit_handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                isExit = false;
+            }
+        };
     }
 
     /**
@@ -263,8 +271,7 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
             if (!isExit) {
                 isExit = true;
-                Toast.makeText(this, "再按一次退出程序!",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "再按一次退出程序!", Toast.LENGTH_SHORT).show();
                 this.home_exit_handler.sendEmptyMessageDelayed(0, 2500);
             } else {
                 AppManager.getAppManager().finishAllActivity();

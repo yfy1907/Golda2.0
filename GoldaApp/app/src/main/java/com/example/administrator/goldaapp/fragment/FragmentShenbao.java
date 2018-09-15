@@ -148,6 +148,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
     private String path; // 选择文件路径
 
 
+    private String upload_file_result = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -236,6 +237,8 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
 
     // 设置监听
     private void setListener() {
+
+        // 省、市、区级联监听
         tv_city_area.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -243,6 +246,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
             }
         });
 
+        // 广告牌类型监听
         tv_icon_type.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -668,16 +672,6 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
             container.addView(viewContainter.get(position));
             return viewContainter.get(position);
         }
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return false;
     }
 
     @Override

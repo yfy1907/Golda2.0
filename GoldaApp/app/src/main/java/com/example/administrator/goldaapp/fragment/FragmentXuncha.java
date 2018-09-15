@@ -971,48 +971,50 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
         mMapView.onPause();
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//
+//        Log.e("main_onWindowFocus", "执行");
+//        if (hasFocus)//拉下状态栏再拉回来会弹出输入键盘，现在处理不让它显示
+//        {
+//            searchView.setFocusable(true);
+//            searchView.setFocusableInTouchMode(true);
+//        }
+//    }
+//
+//    /**
+//     * TODO 返回键值事件
+//     */
+//    @SuppressLint("WrongConstant")
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        /** 获取网页标题 **/
+//        // String name = this.getTextEditValue(this.titlebar_name_text);
+//        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+//            if (!isExit) {
+//                isExit = true;
+//                Toast.makeText(activity, "再按一次退出程序!",
+//                        Toast.LENGTH_SHORT).show();
+//                this.home_exit_handler.sendEmptyMessageDelayed(0, 2500);
+//            } else {
+//                AppManager.getAppManager().finishAllActivity();
+//                Intent localIntent2 = new Intent("android.intent.action.MAIN");
+//                localIntent2.addCategory("android.intent.category.HOME");
+//                localIntent2.setFlags(67108864);
+//                startActivity(localIntent2);
+//                new Handler().postDelayed(new Runnable()
+//                {
+//                    public void run()
+//                    {
+//                        System.exit(0);
+//                    }
+//                } , 20L);
+//                android.os.Process.killProcess(android.os.Process.myPid());
+//            }
+//        }
+//
+//        return false;
+//    }
 
-        Log.e("main_onWindowFocus", "执行");
-        if (hasFocus)//拉下状态栏再拉回来会弹出输入键盘，现在处理不让它显示
-        {
-            searchView.setFocusable(true);
-            searchView.setFocusableInTouchMode(true);
-        }
-    }
 
-    /**
-     * TODO 返回键值事件
-     */
-    @SuppressLint("WrongConstant")
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        /** 获取网页标题 **/
-        // String name = this.getTextEditValue(this.titlebar_name_text);
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            if (!isExit) {
-                isExit = true;
-                Toast.makeText(activity, "再按一次退出程序!",
-                        Toast.LENGTH_SHORT).show();
-                this.home_exit_handler.sendEmptyMessageDelayed(0, 2500);
-            } else {
-                AppManager.getAppManager().finishAllActivity();
-                Intent localIntent2 = new Intent("android.intent.action.MAIN");
-                localIntent2.addCategory("android.intent.category.HOME");
-                localIntent2.setFlags(67108864);
-                startActivity(localIntent2);
-                new Handler().postDelayed(new Runnable()
-                {
-                    public void run()
-                    {
-                        System.exit(0);
-                    }
-                } , 20L);
-                android.os.Process.killProcess(android.os.Process.myPid());
-            }
-        }
-
-        return false;
-    }
 }

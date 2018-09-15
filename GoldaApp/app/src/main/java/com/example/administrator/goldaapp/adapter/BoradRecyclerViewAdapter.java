@@ -2,23 +2,18 @@ package com.example.administrator.goldaapp.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.administrator.goldaapp.R;
-import com.example.administrator.goldaapp.activity.GreenMarkerDetail;
 import com.example.administrator.goldaapp.bean.BoardBean;
 import com.example.administrator.goldaapp.utils.CommonTools;
-import com.example.administrator.goldaapp.utils.DrawableTool;
 
 import java.util.List;
 
@@ -49,13 +44,67 @@ public class BoradRecyclerViewAdapter extends RecyclerView.Adapter<BoradRecycler
         holder.text_company.setText(board.getCompany());
         holder.text_address.setText(board.getAddress());
         holder.text_board_type.setText(board.getIcon_type()+" "+board.getIcon_class()+" "+board.getIcon_cnname());
-        //holder.text_dateline.setText(board.getDateline());
 
         if ("".equals(list.get(position).getDateline()) || null == list.get(position).getDateline())
             holder.text_dateline.setText("0000/00/00");
         else
             holder.text_dateline.setText(CommonTools.timeStamp2Date(list.get(position).getDateline(), "yyyy/MM/dd"));
 
+        /**
+         * 黄色的代表“未上传、未受理、未审核”
+            红色的表示“已退回”
+            绿色的表示“已受理、已审核、已通过”
+            处理用blue，查看用grey
+
+         受理Status : 0未受理， 1已受理， 2已退回
+         核查local_check : 0待处理， 1通过， 2未通过
+         审核lead_idea : 0待审核， 1通过， 2未通过
+         最后备案是由最后一步备案专员上传备案通知书就算备案完成b_attach_20这个有值就算“已备案”
+         */
+        // 受理状态
+        if("0".equals(board.getStatus())){
+            holder.board_state_sl.setText("未受理");
+            holder.board_state_sl.setBackgroundResource(R.drawable.shape_board_button_state0);
+        }else if("1".equals(board.getStatus())){
+            holder.board_state_sl.setText("已受理");
+            holder.board_state_sl.setBackgroundResource(R.drawable.shape_board_button_state1);
+        }else if("2".equals(board.getStatus())){
+            holder.board_state_sl.setText("已退回");
+            holder.board_state_sl.setBackgroundResource(R.drawable.shape_board_button_state2);
+        }
+
+        // 核查状态
+        if("0".equals(board.getLocal_check())){
+            holder.board_state_sl.setText("待处理");
+            holder.board_state_sl.setBackgroundResource(R.drawable.shape_board_button_state0);
+        }else if("1".equals(board.getLocal_check())){
+            holder.board_state_sl.setText(" 通过");
+            holder.board_state_sl.setBackgroundResource(R.drawable.shape_board_button_state1);
+        }else if("2".equals(board.getLocal_check())){
+            holder.board_state_sl.setText("未通过");
+            holder.board_state_sl.setBackgroundResource(R.drawable.shape_board_button_state2);
+        }
+
+        // 审核状态
+        if("0".equals(board.getLead_idea())){
+            holder.board_state_sh.setText("待处理");
+            holder.board_state_sh.setBackgroundResource(R.drawable.shape_board_button_state0);
+        }else if("1".equals(board.getLead_idea())){
+            holder.board_state_sh.setText("通过");
+            holder.board_state_sh.setBackgroundResource(R.drawable.shape_board_button_state1);
+        }else if("2".equals(board.getLead_idea())){
+            holder.board_state_sh.setText("未通过");
+            holder.board_state_sh.setBackgroundResource(R.drawable.shape_board_button_state2);
+        }
+
+        // 备案状态
+        if(null != board.getB_attach_20() && !"".equals(board.getB_attach_20())){
+            holder.board_state_ba.setText("通过");
+            holder.board_state_ba.setBackgroundResource(R.drawable.shape_board_button_state1);
+        }else {
+            holder.board_state_ba.setText("未备案");
+            holder.board_state_ba.setBackgroundResource(R.drawable.shape_board_button_state2);
+        }
 
         Log.e("TAG", "getItemCount: "+list.size() );
         holder.itemView.setOnClickListener(new View.OnClickListener() {

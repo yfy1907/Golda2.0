@@ -226,14 +226,4 @@ public class FragmentMe extends BaseFragment {
                 break;
         }
     }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return false;
-    }
 }

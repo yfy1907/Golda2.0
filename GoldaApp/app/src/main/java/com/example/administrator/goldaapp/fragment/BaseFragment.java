@@ -12,9 +12,4 @@ public abstract class BaseFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
-
-    public abstract void onWindowFocusChanged(boolean hasFocus);
-
-    @SuppressLint("WrongConstant")
-    public abstract boolean onKeyDown(int keyCode, KeyEvent event);
 }

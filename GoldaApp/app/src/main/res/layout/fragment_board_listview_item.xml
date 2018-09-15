@@ -106,10 +106,10 @@
                         android:layout_height="wrap_content"
                         android:text="未受理"
                         android:textSize="10sp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
                         android:textColor="@color/white"
-                        android:background="@drawable/shape_board_button_state1"  />
+                        android:minWidth="50.0dip"
+                        android:gravity="center"
+                        android:background="@drawable/shape_board_button_state0"  />
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="0dp"
@@ -128,10 +128,10 @@
                         android:layout_height="wrap_content"
                         android:text="未核查"
                         android:textSize="10sp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
                         android:textColor="@color/white"
-                        android:background="@drawable/shape_board_button_state1"/>
+                        android:minWidth="50.0dip"
+                        android:gravity="center"
+                        android:background="@drawable/shape_board_button_state0"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -161,10 +161,10 @@
                         android:layout_height="wrap_content"
                         android:text="未审核"
                         android:textSize="10sp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
                         android:textColor="@color/white"
-                        android:background="@drawable/shape_board_button_state2"/>
+                        android:minWidth="50.0dip"
+                        android:gravity="center"
+                        android:background="@drawable/shape_board_button_state1"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="0dp"
@@ -181,12 +181,12 @@
                         android:id="@+id/board_state_ba"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="未通过"
+                        android:text="通过"
                         android:textSize="10sp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
                         android:textColor="@color/white"
-                        android:background="@drawable/shape_board_button_state3"/>
+                        android:minWidth="50.0dip"
+                        android:gravity="center"
+                        android:background="@drawable/shape_board_button_state2"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -205,8 +205,6 @@
                     android:text=" 查 看 "
                     android:background="@drawable/shape_board_button"/>
             </LinearLayout>
-
-
         </LinearLayout>
 
     </android.support.v7.widget.CardView>

@@ -30,7 +30,6 @@ public class FragmentBoard extends BaseFragment {
 
     private Activity activity;
 
-
     private RecyclerView recycle_board;
     private LinearLayoutManager layoutManager ;
 //    private BoradListViewAdapter boradListViewAdapter;
@@ -61,21 +60,6 @@ public class FragmentBoard extends BaseFragment {
 
 
         listdata = new ArrayList<BoardBean>();
-        for(int i=0; i<30; i++){
-            BoardBean board = new BoardBean();
-            board.setAddress("地址++++"+i);
-            board.setCompany("公司+++++"+i);
-            board.setDateline("2018-08-09");
-            board.setIcon_class("类型");
-            board.setIcon_cnname("xxxxxxxxxxxxxxxxxx");
-            board.setIcon_type("type ");
-            board.setState_ba("1");
-            board.setState_hc("2");
-            board.setState_sh("3");
-            board.setState_sl("4");
-            listdata.add(board);
-        }
-
         layoutManager = new LinearLayoutManager(this.activity);
         recycle_board.setLayoutManager(layoutManager);
         boradRecyclerViewAdapter = new BoradRecyclerViewAdapter(activity,listdata);
@@ -85,12 +69,11 @@ public class FragmentBoard extends BaseFragment {
         }else{
             text_no_data.setVisibility(View.GONE);
         }
-        searchAndShow("江苏");
+        searchAndShow(StaticMember.USER.getUid());
     }
 
 
-    public void searchAndShow(final String query) {
-        Log.i("","## 11111111111111111111111查询巡查广告牌。。。。。");
+    public void searchAndShow(final String uid) {
         final Handler handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -113,11 +96,11 @@ public class FragmentBoard extends BaseFragment {
                 }
             }
         };
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.i("","## 查询巡查广告牌。。。。。");
-                listdata = HttpTools.getJson(StaticMember.URL + "mob_search.php", "query=" + query, StaticMember.BOARD_LIST);
+                listdata = HttpTools.getJson(StaticMember.URL + "mob_declare.php", "uid=" + uid, StaticMember.BOARD_LIST);
                 handler.sendEmptyMessage(1);
             }
         }).start();
@@ -128,15 +111,5 @@ public class FragmentBoard extends BaseFragment {
     public void onDestroyView() {
 
         super.onDestroyView();
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return false;
     }
 }
