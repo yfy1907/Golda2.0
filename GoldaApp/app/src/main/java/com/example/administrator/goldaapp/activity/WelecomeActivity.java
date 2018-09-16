@@ -141,12 +141,12 @@ public class WelecomeActivity extends Activity implements ActivityCompat.OnReque
     }
 
 
-    private void ToLoginActivity(){
-        Intent i = new Intent(WelecomeActivity.this,HomeActivity.class);
-        startActivity(i);
-        finish();
-        overridePendingTransition(R.anim.anim_in,R.anim.anim_out);
-    }
+//    private void ToLoginActivity(){
+//        Intent i = new Intent(WelecomeActivity.this,HomeActivity.class);
+//        startActivity(i);
+//        finish();
+//        overridePendingTransition(R.anim.anim_in,R.anim.anim_out);
+//    }
 
     private void skipLogin()
     {

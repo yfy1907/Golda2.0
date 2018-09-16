@@ -335,14 +335,12 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
 
         // 保存按钮隐藏（选择省市区、广告牌类型时显示）
         add_save.setVisibility(View.GONE);
-        
+
         /**
          * 长、宽计算出面积 监听
          */
         edittext_ad_x.addTextChangedListener(new EditChangedListener());
         edittext_ad_y.addTextChangedListener(new EditChangedListener());
-        edittext_ad_s.addTextChangedListener(new EditChangedListener());
-
 
         // view2 初始化
         initViewPage2UI(view_2);
@@ -922,8 +920,8 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
     }
 
 
-    private boolean rightAdX  = true;
-    private boolean rightAdY  = true;
+    private boolean rightAdX  = true; // 广告牌长度是否输入正确
+    private boolean rightAdY  = true; // 广告牌宽度是否输入正确
 
     class EditChangedListener implements TextWatcher {
         // 输入文本之前的状态
@@ -939,30 +937,37 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         // 输入文字后的状态
         @Override
         public void afterTextChanged(Editable s) {
-            // Log.d("TAG", "afterTextChanged--------------->");
+            Log.d("TAG", "afterTextChanged--------------->");
             String adx = edittext_ad_x.getText().toString();
             String ady = edittext_ad_y.getText().toString();
-            try {
-                double x = Double.parseDouble(adx);
-                rightAdX = true;
-            } catch (Exception e) {
-                edittext_ad_x.setText("");
-                showMessage("请输入正确的长度！");
-                rightAdX = false;
+            if(null != adx && !"".equals(adx)){
+                try {
+                    double x = Double.parseDouble(adx);
+                    rightAdX = true;
+                } catch (Exception e) {
+                    showMessage("请输入正确的长度！");
+                    rightAdX = false;
+                }
             }
-            try {
-                double y = Double.parseDouble(ady);
-                rightAdY = true;
-            } catch (Exception e) {
-                edittext_ad_y.setText("");
-                showMessage("请输入正确的宽度！");
-                rightAdY = false;
+            if(null != ady && !"".equals(ady)){
+                try {
+                    double y = Double.parseDouble(ady);
+                    rightAdY = true;
+                } catch (Exception e) {
+                    showMessage("请输入正确的宽度！");
+                    rightAdY = false;
+                }
             }
+
             if(rightAdX && rightAdY){
-                double adX = Double.parseDouble(adx);
-                double adY = Double.parseDouble(ady);
-                double adS = adX * adY;
-                edittext_ad_s.setText(adS+"");
+                if(null != adx && !"".equals(adx) && null != adx && !"".equals(adx)){
+                    double adX = Double.parseDouble(adx);
+                    double adY = Double.parseDouble(ady);
+                    double adS = adX * adY;
+                    edittext_ad_s.setText(adS+"");
+                }else{
+                    edittext_ad_s.setText("");
+                }
             }else{
                 rightAdX = false;
                 rightAdY = false;

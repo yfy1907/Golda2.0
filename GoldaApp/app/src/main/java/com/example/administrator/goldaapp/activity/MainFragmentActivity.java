@@ -292,4 +292,25 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
         return false;
     }
 
+    private static final String TAG = "MainFragmentActivity";
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 10010)//添加广告1001
+        {
+            //getDataFromServer();
+
+            clickTab(xunchaFragment);
+            Log.i(TAG,"-----------------"+TAG+"==添加广告牌巡查回调。。。");
+        }
+        else if (requestCode == 10020)//修改广告1002
+        {
+            //getDataFromServer();
+
+            clickTab(xunchaFragment);
+            Log.i(TAG,"-----------------"+TAG+"==修改广告牌巡查回调。。。");
+        }
+    }
+
 }

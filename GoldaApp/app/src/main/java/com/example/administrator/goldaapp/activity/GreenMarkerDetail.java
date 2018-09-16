@@ -42,6 +42,7 @@ import com.example.administrator.goldaapp.APPAplication;
 import com.example.administrator.goldaapp.R;
 import com.example.administrator.goldaapp.bean.AdGreenBean;
 import com.example.administrator.goldaapp.bean.AdRedBean;
+import com.example.administrator.goldaapp.fragment.FragmentXuncha;
 import com.example.administrator.goldaapp.staticClass.StaticMember;
 import com.example.administrator.goldaapp.utils.AssistUtil;
 import com.example.administrator.goldaapp.utils.CaremaUtil;
@@ -279,9 +280,22 @@ public class GreenMarkerDetail extends AppCompatActivity {
     }
     private void saveData(){
 
-        if (tv_adress.getText().toString().trim().equals(""))
+        if (tv_adress.getText().toString().trim().equals("")){
             showSnackBar("地址不能为空");
-        int distance = (int) MultiTool.toDistance(HomeActivity.myLocationLL.latitude, HomeActivity
+            return;
+        }
+        if(null == FragmentXuncha.myLocationLL){
+            showSnackBar("获取当前位置失败，请打开定位功能！");
+            return;
+        }
+        Double lat = FragmentXuncha.myLocationLL.latitude;
+        Double lon = FragmentXuncha.myLocationLL.longitude;
+        if(null == lat || null == lon){
+            showSnackBar("获取当前位置失败，请打开定位功能！");
+            return;
+        }
+
+        int distance = (int) MultiTool.toDistance(FragmentXuncha.myLocationLL.latitude, FragmentXuncha
                 .myLocationLL.longitude, Double.parseDouble(markerLat), Double.parseDouble(markerLng));
         if (distance > StaticMember.LENGTH + accuracy)
             showSnackBar("距离目标点过远，不允许上传数据！");
@@ -311,8 +325,8 @@ public class GreenMarkerDetail extends AppCompatActivity {
                                     sn.show();
                                     CommonTools.setSnackbarMessageTextColor(sn, getResources().getColor(R.color.orange));
 
-                                    Intent intent = new Intent(GreenMarkerDetail.this, HomeActivity.class);
-                                    startActivityForResult(intent, 10010);//添加的请求code,自定义但是和mainActivity里相同
+//                                    Intent intent = new Intent(GreenMarkerDetail.this, MainFragmentActivity.class);
+//                                    startActivityForResult(intent, 10010);//添加的请求code,自定义但是和mainActivity里相同
                                     GreenMarkerDetail.this.finish();
                                 }
                             }
@@ -400,8 +414,8 @@ public class GreenMarkerDetail extends AppCompatActivity {
                             sn.show();
                             CommonTools.setSnackbarMessageTextColor(sn, getResources().getColor(R.color.orange));
 
-                            Intent intent = new Intent(GreenMarkerDetail.this, HomeActivity.class);
-                            startActivityForResult(intent, 10010);//添加的请求code,自定义但是和mainActivity里相同
+//                            Intent intent = new Intent(GreenMarkerDetail.this, MainFragmentActivity.class);
+//                            startActivityForResult(intent, 10010);//添加的请求code,自定义但是和mainActivity里相同
                             GreenMarkerDetail.this.finish();
                         }
                     }

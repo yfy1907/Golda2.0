@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.example.administrator.goldaapp.activity.HomeActivity;
+import com.example.administrator.goldaapp.activity.MainFragmentActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,7 +51,8 @@ public class MyReceiver extends BroadcastReceiver {
                 Logger.d(TAG, "[MyReceiver] 用户点击打开了通知");
 
                 //打开自定义的Activity
-                Intent i = new Intent(context, HomeActivity.class);
+//                Intent i = new Intent(context, HomeActivity.class);
+                Intent i = new Intent(context, MainFragmentActivity.class);
                 i.putExtras(bundle);
                 //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );

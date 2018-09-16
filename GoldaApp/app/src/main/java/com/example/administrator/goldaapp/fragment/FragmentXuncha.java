@@ -484,6 +484,7 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
             }
         }).show();
     }
+
     /*从数据库中查询中心点附近的坐标*/
     private void getDataFromServer() {
         //从服务器加载数据前清除当前地图上的所有标注
@@ -716,6 +717,8 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
             getDataFromServer();
         }
     }
+
+
     private void showPopWindow(Marker marker, List<AdRedBean> red_list, List<AdGreenBean> green_list, View rootView) {
 
         ArrayList<MarkerInfo> list = new ArrayList<MarkerInfo>();
@@ -973,6 +976,9 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
         refresh_length = activity.getSharedPreferences("setting", MODE_PRIVATE).getInt("refresh_length", 150);
         Log.e("本地刷新距离", activity.getSharedPreferences("setting", MODE_PRIVATE).getInt("refresh_length", 150) + "");
 
+        Log.i(",","### FragmentXuncha onResume.....");
+
+        getDataFromServer();
     }
 
     @Override

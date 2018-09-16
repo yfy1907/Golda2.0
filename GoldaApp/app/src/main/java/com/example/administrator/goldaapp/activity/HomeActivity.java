@@ -860,8 +860,7 @@ public class HomeActivity extends AppCompatActivity implements BaiduMap.OnMapCli
                     .direction(location.getDirection()).latitude(location.getLatitude())
                     .longitude(location.getLongitude()).build();
             mBaiduMap.setMyLocationData(locData);
-            myLocationLL = new LatLng(location.getLatitude(),
-                    location.getLongitude());
+            myLocationLL = new LatLng(location.getLatitude(), location.getLongitude());
             province = location.getProvince();
             city = location.getCity();
             district = location.getDistrict();

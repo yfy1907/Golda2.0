@@ -360,7 +360,8 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:inputType="numberDecimal"/>
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -386,7 +387,8 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:inputType="number"/>
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -413,7 +415,8 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:inputType="number"/>
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -441,7 +444,7 @@
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
                     android:background="@color/white"
-                    android:inputType="number|numberDecimal"/>
+                    android:inputType="numberDecimal"/>
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -469,7 +472,7 @@
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
                     android:background="@color/white"
-                    android:inputType="number|numberDecimal"/>
+                    android:inputType="numberDecimal"/>
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -496,7 +499,7 @@
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
                     android:background="@color/white"
-                    android:inputType="number|numberDecimal" />
+                    android:inputType="numberDecimal" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
