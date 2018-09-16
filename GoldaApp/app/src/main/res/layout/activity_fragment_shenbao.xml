@@ -11,5 +11,4 @@
         android:id="@+id/shenbao_layout"
         layout="@layout/fragment_shenbao" />
 
-
 </android.support.design.widget.CoordinatorLayout>

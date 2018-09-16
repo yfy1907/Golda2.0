@@ -440,7 +440,8 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:inputType="number|numberDecimal"/>
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -467,7 +468,8 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:inputType="number|numberDecimal"/>
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -493,7 +495,8 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:inputType="number|numberDecimal" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />

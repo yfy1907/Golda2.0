@@ -80,6 +80,9 @@ public class MultiTool {
 
     //根据icon名称，获取中文名称;或根据中文名称，获取icon名称
     public static String getADType(String icons) {
+        if(null ==icons || "".equals(icons)){
+            return "";
+        }
 
         //常用的排在前面；
         String[] icon = {"店招牌匾设施","常规屋顶广告","常规墙面广告","大型显示屏广告","中小型显示屏广告",

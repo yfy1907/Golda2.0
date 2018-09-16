@@ -561,7 +561,7 @@ public class RedMarkerDetail extends AppCompatActivity {
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式在android中，创建文件时，文件名中不能包含“：”冒号
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmssSSS");//设置日期格式在android中，创建文件时，文件名中不能包含“：”冒号
         String filename = df.format(new Date());
         File currentImageFile  = new File(dir, filename + ".jpg");
         if (!currentImageFile .exists()){
@@ -774,7 +774,7 @@ public class RedMarkerDetail extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssSSS");
                         String str = formatter.format(new Date()).trim();
                         //图片命名法则：当前时�?+10亿分之一的随机数
                         String up_gis_pic = str + "_" + (int) (Math.random() * 1000000000) + ".jpg";

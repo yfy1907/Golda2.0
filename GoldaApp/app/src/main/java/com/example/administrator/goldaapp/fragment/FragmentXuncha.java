@@ -23,7 +23,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -221,6 +220,8 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
+        baseToolbar = toolbar;
+
 //        toolbar.setTitle("");
 //        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -344,15 +345,25 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (msg.what == 1)//绿标加载完成
+            if (msg.what == StaticMember.REQUEST_GREEN_DATA_RESULT)//绿标加载完成
             {
                 if (adgreenList == null || adgreenList.size() <= 0) {
                     // return;
                 }else {
 
                     Log.e("准备绘制绿色广告marker", adgreenList.size() + "个");
+                    boolean greenFlag = false;
                     for (int i = 0,len=adgreenList.size(); i < len; i++) {
-                        if (!CommonTools.isEnglishCharacter(adgreenList.get(i).getIcon())) {
+                        if(adgreenList.get(i) instanceof AdGreenBean){
+                            greenFlag = true;
+                        }else{
+                            greenFlag = false;
+                        }
+                        if(!greenFlag){
+                            continue;
+                        }
+                        String iconStr= adgreenList.get(i).getIcon();
+                        if (!CommonTools.isEnglishCharacter(iconStr)) {
                             adgreenList.remove(i);
                             continue;
                         }
@@ -399,7 +410,7 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
                     }
                 }
             }
-            if (msg.what == 2)//红标加载完成
+            if (msg.what == StaticMember.REQUEST_RED_DATE_RESULT)//红标加载完成
             {
                 if (adredList == null || adredList.size() <= 0) {
                     // return;
@@ -513,7 +524,7 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                handler.sendEmptyMessage(1);
+                handler.sendEmptyMessage(StaticMember.REQUEST_GREEN_DATA_RESULT);
 
             }
         });
@@ -543,7 +554,7 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
                 }catch (Exception e) {
                     e.printStackTrace();
                 }
-                handler.sendEmptyMessage(2);
+                handler.sendEmptyMessage(StaticMember.REQUEST_RED_DATE_RESULT);
 
             }
         });
@@ -670,8 +681,8 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
                 @Override
                 public void onClick(View v) {
                     canClickMap = false;
-                    handler.sendEmptyMessage(1);
-                    handler.sendEmptyMessage(2);
+                    handler.sendEmptyMessage(StaticMember.REQUEST_GREEN_DATA_RESULT);
+                    handler.sendEmptyMessage(StaticMember.REQUEST_RED_DATE_RESULT);
                 }
             }) .show();
             CommonTools.setSnackbarMessageTextColor(sn, getResources().getColor(R.color.orange));
@@ -797,8 +808,8 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
             @Override
             public void onClick(View v) {
                 canClickMap = false;
-                handler.sendEmptyMessage(1);
-                handler.sendEmptyMessage(2);
+                handler.sendEmptyMessage(StaticMember.REQUEST_GREEN_DATA_RESULT);
+                handler.sendEmptyMessage(StaticMember.REQUEST_RED_DATE_RESULT);
             }
         }) .show();
         CommonTools.setSnackbarMessageTextColor(sn, getResources().getColor(R.color.orange));

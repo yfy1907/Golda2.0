@@ -56,8 +56,6 @@ public class FragmentBoard extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 //        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 //        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        Log.i("","222222222222。。。。。");
-
 
         listdata = new ArrayList<BoardBean>();
         layoutManager = new LinearLayoutManager(this.activity);
@@ -78,7 +76,7 @@ public class FragmentBoard extends BaseFragment {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                if (msg.what == 1) {
+                if (msg.what == StaticMember.REQUEST_BOARD_LIST_DATE_RESULT) {
                     
                     Log.e("查到的广告数", listdata.size() + "个");
                     layoutManager = new LinearLayoutManager(activity);
@@ -101,7 +99,7 @@ public class FragmentBoard extends BaseFragment {
             @Override
             public void run() {
                 listdata = HttpTools.getJson(StaticMember.URL + "mob_declare.php", "uid=" + uid, StaticMember.BOARD_LIST);
-                handler.sendEmptyMessage(1);
+                handler.sendEmptyMessage(StaticMember.REQUEST_BOARD_LIST_DATE_RESULT);
             }
         }).start();
     }

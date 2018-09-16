@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -21,11 +22,15 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BaseTransientBottomBar;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -34,6 +39,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
@@ -41,14 +47,25 @@ import android.widget.Toast;
 
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.example.administrator.goldaapp.R;
+import com.example.administrator.goldaapp.activity.ModifyLatLngActivity;
+import com.example.administrator.goldaapp.activity.RedMarkerDetail;
+import com.example.administrator.goldaapp.bean.AdRedBean;
+import com.example.administrator.goldaapp.bean.BoardBean;
 import com.example.administrator.goldaapp.bean.JsonBean;
 import com.example.administrator.goldaapp.common.JsonFileReader;
 import com.example.administrator.goldaapp.common.MyLogger;
+import com.example.administrator.goldaapp.staticClass.StaticMember;
 import com.example.administrator.goldaapp.utils.AssistUtil;
 import com.example.administrator.goldaapp.utils.CaremaUtil;
+import com.example.administrator.goldaapp.utils.CommonTools;
+import com.example.administrator.goldaapp.utils.DateHelper;
 import com.example.administrator.goldaapp.utils.FileUtil;
 import com.example.administrator.goldaapp.adapter.AttachListViewAdapter;
+import com.example.administrator.goldaapp.utils.HttpTools;
+import com.example.administrator.goldaapp.utils.MultiTool;
+import com.example.administrator.goldaapp.utils.SFTPChannel;
 import com.example.administrator.goldaapp.utils.StringUtil;
+import com.example.administrator.goldaapp.utils.httpsupport.AsyncTaskOwner;
 import com.example.administrator.goldaapp.view.MyDialogFileChose;
 import com.google.gson.Gson;
 
@@ -67,9 +84,10 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
-public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.OnButtonClickListener {
+public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.OnButtonClickListener,AsyncTaskOwner {
 
     /** Called when the activity is first created. */
     private final static String TAG = "FragmentShenbao";
@@ -85,11 +103,18 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
     private ArrayList<ArrayList<String>> options2Items = new ArrayList<ArrayList<String>>();
     private ArrayList<ArrayList<ArrayList<String>>> options3Items = new ArrayList<ArrayList<ArrayList<String>>>();
 
+    private String province = "";
+    private String city = "";
+    private String area = "";
 
     // 广告牌类型
     private ArrayList<JsonBean> optionsType1Items = new ArrayList<JsonBean>();
     private ArrayList<ArrayList<String>> optionsType2Items = new ArrayList<ArrayList<String>>();
     private ArrayList<ArrayList<ArrayList<String>>> optionsType3Items = new ArrayList<ArrayList<ArrayList<String>>>();
+
+    private String icon_type = "";   // 请选择分类（类型）
+    private String icon_class = "";  // 请选择种类（类型）
+    private String icon_cnname = ""; // 请选择标识（类型）
 
     private Unbinder unbinder;
     @BindView(R.id.tv_city_area)
@@ -131,31 +156,39 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
     @BindView(R.id.edittext_li_height)
     EditText edittext_li_height; // 离地高度(米)
 
+    // 申报项目保存
+//    @BindView(R.id.add_save)
+    RelativeLayout add_save;
+
     /**
      * 附件上传ViewPage
      */
-    private MyDialogFileChose dialog;// 图片选择对话框
+    private MyDialogFileChose myDialogFileChose;// 图片选择对话框
     public static final int NONE = 0;
-    public static final int PHOTOHRAPH = 1;// 拍照
-    private final int CHOSE_FILE = 5;
     private ListView addAttachListView;
     private AttachListViewAdapter attachListViewAdapter;
     private ArrayList<Map<String, String>> listAttachData;
-    private String photofilePath;
-    private File dir = new File(Environment.getExternalStorageDirectory(),"golda");//照片保存路径文件夹
 
+    private String[] attachArray = new String[]{};
+
+    private File imageDir = new File(AssistUtil.getMemoryPath()+"uploadImage/");//照片保存路径文件夹
+    private String ImagefilePath = "";  // 上传文件图片路径
+    private String ImageFileName = "";  // 上传文件图片名称
     private int choseFileIndex = 0;
     private String path; // 选择文件路径
 
 
-    private String upload_file_result = "";
+    private String today = "";  // 文件上传日期文件夹
+    private String upload_file_result = ""; // 文件上传结果
+    private String upload_save_result = ""; // 数据保存结果
+    private ProgressDialog mpDialog;          // 等待框
+    private BoardBean boardBean;              // 保存数据对象
+    private String de_id = "0";       // 申报ID，0表示新增，否则修改
+
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         activity = getActivity();
-
         View view = inflater.inflate(R.layout.activity_fragment_shenbao, container,false);
         // 加载fragment的布局控件（通过layout根元素加载)
         return view;
@@ -166,6 +199,17 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this.activity);
         initMyTabHost(view);
+
+//        unbinder = ButterKnife.bind(this, view);
+
+        add_save = (RelativeLayout) view.findViewById(R.id.add_save);
+        add_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("","点击保存按钮了。。。。");
+                submitSaveData();
+            }
+        });
 
         // 绑定组件
         viewPager = (ViewPager) view.findViewById(R.id.viewpager);
@@ -235,88 +279,9 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
 
     }
 
-    // 设置监听
-    private void setListener() {
-
-        // 省、市、区级联监听
-        tv_city_area.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPickerView();
-            }
-        });
-
-        // 广告牌类型监听
-        tv_icon_type.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPickerViewAdType();
-            }
-        });
-    }
-
-    /**
-     * 选择省、市、区级联
-     */
-    private void showPickerView() {
-        if(options1Items.size() == 0){
-            Toast.makeText(this.activity,"数据未加载。",Toast.LENGTH_SHORT).show();
-            return;
-        }
-        OptionsPickerView pvOptions = new OptionsPickerView.Builder(activity, new OptionsPickerView.OnOptionsSelectListener() {
-            @Override
-            public void onOptionsSelect(int options1, int options2, int options3, View v) {
-                //返回的分别是三个级别的选中位置
-                String text = options1Items.get(options1).getPickerViewText() +"<br/>"+
-                        options2Items.get(options1).get(options2) +"<br/>"+
-                        options3Items.get(options1).get(options2).get(options3);
-                tv_city_area.setText(Html.fromHtml(text));
-            }
-        }).setTitleText("")
-                .setDividerColor(Color.GRAY)
-                .setTextColorCenter(Color.GRAY)
-                .setContentTextSize(14)
-                .setOutSideCancelable(false)
-                .build();
-          /*pvOptions.setPicker(options1Items);//一级选择器
-        pvOptions.setPicker(options1Items, options2Items);//二级选择器*/
-        pvOptions.setPicker(options1Items, options2Items, options3Items);//三级选择器
-        pvOptions.show();
-    }
-
-    /**
-     * 选择广告牌级联
-     */
-    private void showPickerViewAdType() {
-        if(optionsType1Items.size() == 0){
-            Toast.makeText(this.activity,"数据未加载。",Toast.LENGTH_SHORT).show();
-            return;
-        }
-        OptionsPickerView pvOptions = new OptionsPickerView.Builder(activity, new OptionsPickerView.OnOptionsSelectListener() {
-            @Override
-            public void onOptionsSelect(int options1, int options2, int options3, View v) {
-                //返回的分别是三个级别的选中位置
-                String text = optionsType1Items.get(options1).getPickerViewText() + "  \n"+
-                        optionsType2Items.get(options1).get(options2) +"  \n"+
-                        optionsType3Items.get(options1).get(options2).get(options3);
-                tv_icon_type.setText(Html.fromHtml(text));
-            }
-        }).setTitleText("")
-                .setDividerColor(Color.GRAY)
-                .setTextColorCenter(Color.GRAY)
-                .setContentTextSize(14)
-                .setOutSideCancelable(false)
-                .build();
-          /*pvOptions.setPicker(options1Items);//一级选择器
-        pvOptions.setPicker(options1Items, options2Items);//二级选择器*/
-        pvOptions.setPicker(optionsType1Items, optionsType2Items, optionsType3Items);//三级选择器
-        pvOptions.show();
-    }
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
     }
 
     //初始化TabHost
@@ -330,26 +295,8 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
          * setIndicator()   每个Tab的标题
          * setCount()       每个Tab的标签页布局
          */
-
-//        View tab_view1 = LayoutInflater.from(activity.getApplicationContext()).inflate(R.layout.tabhost_tag,null);
-//        TextView tab_title1 = (TextView) tab_view1.findViewById(R.id.tab_lable);
-//        tab_title1.setText("基本信息");
-//
-//        View tab_view2 = LayoutInflater.from(activity.getApplicationContext()).inflate(R.layout.tabhost_tag,null);
-//        TextView tab_title2 = (TextView) tab_view2.findViewById(R.id.tab_lable);
-//        tab_title2.setText("图片信息");
-//
-//        mTabHost.addTab(mTabHost.newTabSpec("tab1").setContent(R.id.tab1).setIndicator(tab_view1));
-//        mTabHost.addTab(mTabHost.newTabSpec("tab2").setContent(R.id.tab2).setIndicator(tab_view2));
-
         mTabHost.addTab(mTabHost.newTabSpec("tab1").setContent(R.id.tab1).setIndicator("基本信息"));
         mTabHost.addTab(mTabHost.newTabSpec("tab2").setContent(R.id.tab2).setIndicator("图片信息"));
-
-//        for (int i = 0; i < mTabWidget.getChildCount(); i++) {
-//            TextView localTextView = (TextView)mTabWidget.getChildAt(i).findViewById(android.R.id.title);
-//            localTextView.setTextSize(16.0F);
-//            localTextView.setTextColor(getResources().getColorStateList(android.R.color.tab_indicator_text));
-//        }
 
         updateTabStyle();
     }
@@ -363,7 +310,6 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
             localTextView.setTextSize(14.0F);
 
             //设置背景图
-//	        localTabWidget.getChildAt(i).setBackgroundResource(R.drawable.tabwidget_selector);
             if (mTabHost.getCurrentTab() == i) {
                 localTextView.setTextColor(getResources().getColorStateList(R.color.orange));
                 localTabWidget.getChildAt(i).setBackgroundResource(R.color.white);
@@ -385,12 +331,21 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         viewContainter.add(view_1);
         viewContainter.add(view_2);
 
-
         unbinder = ButterKnife.bind(this, view_1);
+
+        // 保存按钮隐藏（选择省市区、广告牌类型时显示）
+        add_save.setVisibility(View.GONE);
+        
+        /**
+         * 长、宽计算出面积 监听
+         */
+        edittext_ad_x.addTextChangedListener(new EditChangedListener());
+        edittext_ad_y.addTextChangedListener(new EditChangedListener());
+        edittext_ad_s.addTextChangedListener(new EditChangedListener());
+
 
         // view2 初始化
         initViewPage2UI(view_2);
-
 
         // 设置选择省市区监听
         setListener();
@@ -398,18 +353,18 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
     }
 
     private void initViewPage2UI(View view){
-        dialog = new MyDialogFileChose(this.activity);
-        dialog.setOnButtonClickListener(this);
+        myDialogFileChose = new MyDialogFileChose(this.activity);
+        myDialogFileChose.setOnButtonClickListener(this);
 
         addAttachListView = (ListView) view.findViewById(R.id.addAttachListView);
         listAttachData = new ArrayList<>();
 
-        String[] titleArray = new String[]{"设置申请书","公司营业执照","个人身份证明","效果图","实景图","规格平面图","产权证书或\n房屋租赁协议"
+        attachArray = new String[]{"设置申请书","公司营业执照","个人身份证明","效果图","实景图","规格平面图","产权证书或\n房屋租赁协议"
                 ,"载体安全证明","相关书面协议","场地租用合同","结构设计图","施工图","施工说明书","建安资质证书","施工保证书","规划拍卖意见",
         "授权人身份证","授权委托书"};
-        for(int i = 0; i < titleArray.length; i++ ){
+        for(int i = 0; i < attachArray.length; i++ ){
             Map<String,String> map = new HashMap<>();
-            map.put("title",titleArray[i]);
+            map.put("title",attachArray[i]);
             map.put("file_path","");
             map.put("file_name","");
             map.put("file_key","b_attach_"+(i+1));
@@ -420,11 +375,14 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         addAttachListView.setAdapter(attachListViewAdapter);
     }
 
+    /**
+     * 添加图片信息选择弹出框
+     */
     private AttachListViewAdapter.IDialogControl AddFileDialogControl = new AttachListViewAdapter.IDialogControl() {
         @Override
         public void onShowDialog() {
             // TODO Auto-generated method stub
-            dialog.show();
+            myDialogFileChose.show();
         }
         @Override
         public void getPosition(int position) {
@@ -433,6 +391,9 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         }
     };
 
+    /**
+     * 移除图片信息附件选择弹出框
+     */
     private AttachListViewAdapter.IDialogControl RemoveFileDialogControl = new AttachListViewAdapter.IDialogControl() {
         @Override
         public void onShowDialog() {
@@ -476,6 +437,264 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         builder.create().show();
     }
 
+//    @OnClick({R.id.add_save})
+//    public void onViewClicked(View view) {
+//        switch (view.getId()) {
+//            case R.id.add_save:
+//                Log.i(TAG,"点击保存了。。。222222222");
+//                submitSaveData();
+//                break;
+//            default:
+//                break;
+//        }
+//    }
+
+    /**
+     * 保存数据
+     */
+    private void submitSaveData(){
+
+        if(null == icon_cnname || "".equals(icon_cnname)){
+            showMessage("请选择广告牌类型！");
+            return;
+        }
+
+        if(!rightAdX || !rightAdY){
+            showMessage("广告牌长度 或 宽度输入错误！");
+            return;
+        }
+
+        boardBean = new BoardBean();
+        boardBean.setDe_id(de_id);
+        boardBean.setUid(StaticMember.USER.getUid());
+        boardBean.setProvince(province);
+        boardBean.setCity(city);
+        boardBean.setArea(area);
+        boardBean.setIcon_type(icon_type);
+        boardBean.setIcon_class(icon_class);
+        boardBean.setIcon_cnname(icon_cnname);
+
+
+        String icon = "";
+        if("店招牌匾设施".equals(icon_cnname)){
+            icon = "small_door";
+        }else{
+            icon = MultiTool.getADType(icon_cnname);
+        }
+        boardBean.setIcon(icon);  // 非用户填写,通过icon_cnname的中文，转换出对应的英文，用在鸟瞰图上显示图标
+        boardBean.setAddress(edittext_adress.getText().toString()); // 设置地点
+        boardBean.setArea_line(edittext_area_line.getText().toString());    //  路段
+        boardBean.setCompany(edittext_company.getText().toString());    // 申请公司名称
+        boardBean.setCompany_address(edittext_company_address.getText().toString());    // 公司地址
+        boardBean.setPerson(edittext_person.getText().toString());      // 法定代表人
+        boardBean.setContact(edittext_contact.getText().toString());    // 联系电话号码
+        boardBean.setProcess_contact(edittext_process_contact.getText().toString());    // 联系人
+        boardBean.setProcess_tel(edittext_process_tel.getText().toString());    // 联系电话号码
+        boardBean.setEmail(edittext_email.getText().toString());    // 联系邮箱
+        boardBean.setMaterial(edittext_material.getText().toString()); // 广告牌材质
+        boardBean.setWt(edittext_wt.getText().toString());  // 外凸(米)
+        boardBean.setModel(edittext_model.getText().toString());    // 数量(个)
+        boardBean.setFacenum(edittext_facenum.getText().toString()); // 展示面数(面)
+        boardBean.setAd_x(edittext_ad_x.getText().toString());  // 长度(米)
+        boardBean.setAd_y(edittext_ad_y.getText().toString());  // 宽度(米)
+        boardBean.setAd_x(edittext_ad_x.getText().toString());  // 面积(平方米)
+        boardBean.setLi_height(edittext_li_height.getText().toString());    // 离地高度(米)
+
+        boardBean.setB_attach_1(listAttachData.get(0).get("file_name"));
+        boardBean.setB_attach_2(listAttachData.get(1).get("file_name"));
+        boardBean.setB_attach_3(listAttachData.get(2).get("file_name"));
+        boardBean.setB_attach_4(listAttachData.get(3).get("file_name"));
+        boardBean.setB_attach_5(listAttachData.get(4).get("file_name"));
+        boardBean.setB_attach_6(listAttachData.get(5).get("file_name"));
+        boardBean.setB_attach_7(listAttachData.get(6).get("file_name"));
+        boardBean.setB_attach_8(listAttachData.get(7).get("file_name"));
+        boardBean.setB_attach_9(listAttachData.get(8).get("file_name"));
+        boardBean.setB_attach_10(listAttachData.get(9).get("file_name"));
+        boardBean.setB_attach_11(listAttachData.get(10).get("file_name"));
+        boardBean.setB_attach_12(listAttachData.get(11).get("file_name"));
+        boardBean.setB_attach_13(listAttachData.get(12).get("file_name"));
+        boardBean.setB_attach_14(listAttachData.get(13).get("file_name"));
+        boardBean.setB_attach_15(listAttachData.get(14).get("file_name"));
+        boardBean.setB_attach_16(listAttachData.get(15).get("file_name"));
+        boardBean.setB_attach_17(listAttachData.get(16).get("file_name"));
+        boardBean.setB_attach_18(listAttachData.get(17).get("file_name"));
+
+        int imageSize = 0;
+        for(int i=0; i<listAttachData.size() ; i++){
+            if(!"".equals(listAttachData.get(i).get("file_name"))){
+                imageSize ++;
+            }
+        }
+
+        String msgTips = "";
+        if(imageSize == 0){
+            msgTips = "<font color=red>您尚未上传图片文件，确定要保存吗?</font>";
+        }else if(imageSize < attachArray.length){
+            msgTips = "您上传了"+imageSize+"张文件，剩余"+(attachArray.length - imageSize)+"张文件未上传，确认保存吗?";
+            msgTips += "<br/><font color=red>*提交后不能修改</font>";
+        }else{
+            msgTips = "确定要保存吗?";
+        }
+        Log.i(TAG,"### msgTips="+msgTips+"; size="+imageSize+"; attachArray.length="+attachArray.length);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.activity);
+        builder.setMessage(Html.fromHtml(msgTips));
+        builder.setTitle("提示");
+        builder.setPositiveButton("暂存", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                add_save.setVisibility(View.GONE);
+                boardBean.setConfirm_status("0");
+                saveData();
+            }
+        });
+        builder.setNeutralButton("提交", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                add_save.setVisibility(View.GONE);
+                boardBean.setConfirm_status("1");
+                saveData();
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                add_save.setVisibility(View.VISIBLE);
+            }
+        });
+        builder.show();
+    }
+
+    private void saveData(){
+        mpDialog = new ProgressDialog(activity);
+        mpDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);// 设置风格为圆形进度条
+        mpDialog.setMessage("正在上传数据,请勿关闭当前窗口");
+        mpDialog.setIndeterminate(false);// 设置进度条是否为不明?
+        mpDialog.setCancelable(true);// 设置进度条是否可以按?回键取消
+        mpDialog.show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Gson gson = new Gson();
+                    String dataStr = gson.toJson(boardBean);
+                    Log.i("dataStr", " #### dataStr="+dataStr);
+                    upload_save_result = HttpTools.sendPostRequest(StaticMember.URL + "mob_declare.php", dataStr);
+                    MyLogger.Log().i("申报项目保存数据结果："+upload_save_result);
+
+                    Message msg = new Message();
+                    msg.arg1 = StaticMember.SAVE_SHENBAO_DATA;
+                    if (!"0".equals(upload_save_result)) {
+                        msg.what = 1;
+                    }else{
+                        msg.what = 0;
+                    }
+                    mHandler.sendMessage(msg);
+                    Log.e("1上传返回的结果", "upload_save_result=" + upload_save_result);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
+    }
+
+    /**
+     * 上传文件
+     */
+    private void uploadFileResult(){
+        if("".equals(ImagefilePath)){
+            showMessage("你还没有选择图片！");
+            return;
+        }
+        mpDialog = new ProgressDialog(this.activity);
+        mpDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);// 设置风格为圆形进度条
+        mpDialog.setMessage("正在上传数据,请勿关闭当前窗口");
+        mpDialog.setIndeterminate(false);// 设置进度条是否为不明?
+        mpDialog.setCancelable(true);// 设置进度条是否可以按?回键取消
+        mpDialog.show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    today = DateHelper.getToday("yyyy-MM-dd");
+                    ImageFileName = DateHelper.getToday("yyyyMMddHHmmssSSS")+"_"+StaticMember.USER.getUid()+"_"+ (int) (Math.random() * 1000) + ".jpg";
+                    upload_file_result = SFTPChannel.getChannel(ImagefilePath, StaticMember.FTPRemotePath + today, ImageFileName, 10000);
+                    Message msg = new Message();
+                    msg.arg1 = StaticMember.UPLOAD_IMAGE_RESULT;
+                    if (upload_file_result == "1") {
+                        msg.what = 1;
+                    }else{
+                        msg.what = 0;
+                    }
+                    mHandler.sendMessage(msg);
+                    Log.e("1上传返回的结果", "upload_file_result=" + upload_file_result);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    // 定义一个消息处理handler
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if(msg.arg1 == StaticMember.UPLOAD_IMAGE_RESULT){
+                if (msg.what == 1) {
+                    if(null != mpDialog){
+                        mpDialog.cancel();
+                    }
+                    // 获取上传图片的文件名称显示在lieb列表中
+                    // String fileName = FileUtil.getFileNameByPath(ImagefilePath);
+                    listAttachData.get(choseFileIndex).put("file_path",ImagefilePath);
+                    listAttachData.get(choseFileIndex).put("file_name",ImageFileName);
+                    MyLogger.Log().i("## 操作成功::: ImageFileName："+ ImageFileName+"; ImagefilePath="+ImagefilePath);
+                    attachListViewAdapter.notifyDataSetChanged();
+                    ImagefilePath = "";
+                    ImageFileName = "";
+                    showMessage("文件上传成功！");
+                }else if(msg.what == 0){
+                    if(null != mpDialog){
+                        mpDialog.cancel();
+                    }
+                    showMessage("文件上传失败，请重试！");
+                }
+            }else if(msg.arg1 == StaticMember.CHOOSE_IMAGE_RESULT){
+                // 拍照或选择图片上传处理
+                if(msg.what == 1){
+                    // 拍照处理
+                }else if(msg.what == 2){
+                    // 选择图片处理
+                }else if(msg.what == 3){
+                    // 选择PDF文件处理
+                }
+                uploadFileResult();
+                return;
+            }else if(msg.arg1 == StaticMember.SAVE_SHENBAO_DATA){
+                if(null != mpDialog){
+                    mpDialog.cancel();
+                }
+                add_save.setVisibility(View.VISIBLE);
+                if(msg.what == 1){
+                    // 保存成功
+                    showMessage("数据保存成功！");
+                }else if(msg.what == 0){
+                    // 保存失败
+                    showMessage("数据保存失败，请重试！");
+                    showSnackbarMessage("数据保存失败！");
+                }
+            }
+        }
+    };
+
+    private void showMessage(String message){
+        Toast.makeText(this.activity,message,Toast.LENGTH_SHORT).show();
+    }
+
     /**
      * 设置Android6.0的权限申请
      */
@@ -491,9 +710,14 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         }else {
             takePhoto();
         }
-
     }
 
+    /**
+     * 权限申请结果处理
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -508,17 +732,21 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
 
     @Override
     public void camera() {
-        dialog.dismiss();
+        if(null != myDialogFileChose){
+            myDialogFileChose.dismiss();
+        }
         setPermissions();
     }
 
+    /**
+     * 拍照
+     */
     private void takePhoto(){
-        if (!dir.exists()) {
-            dir.mkdirs();
+        if (!imageDir.exists()) {
+            imageDir.mkdirs();
         }
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式在android中，创建文件时，文件名中不能包含“：”冒号
-        String filename = df.format(new Date());
-        File currentImageFile  = new File(dir, filename + ".jpg");
+        String filename = DateHelper.getToday("yyyyMMddHHmmssSSS")+"_"+StaticMember.USER.getUid()+"_"+ (int) (Math.random() * 1000);    //设置日期格式在android中，创建文件时，文件名中不能包含“：”冒号
+        File currentImageFile  = new File(imageDir, filename + ".jpg");
         if (!currentImageFile .exists()){
             try {
                 currentImageFile.createNewFile();
@@ -526,33 +754,39 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                 e.printStackTrace();
             }
         }
-        photofilePath = currentImageFile.getAbsolutePath();//获取图片的绝对路径
-        Log.e("", "#### photofilePath: "+photofilePath );
+        ImagefilePath = currentImageFile.getAbsolutePath();//获取图片的绝对路径
+        Log.e("", "#### ImagefilePath: "+ImagefilePath );
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // 指定调用相机拍照后的照片存储的路径
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));
-        startActivityForResult(intent, PHOTOHRAPH);
+        startActivityForResult(intent, StaticMember.PHOTO_IMAGE_TYPE);
     }
 
+    /**
+     * 从相册中选择
+     */
     @Override
     public void gallery() {
-        dialog.dismiss();
+        myDialogFileChose.dismiss();
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, CHOSE_FILE);
+        startActivityForResult(intent, StaticMember.CHOOSE_IMAGE_TYPE);
     }
 
+    /**
+     * 选择文件（pdf）
+     */
     @Override
     public void choseFile() {
-        dialog.dismiss();
+        myDialogFileChose.dismiss();
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");//无类型限制
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(intent, CHOSE_FILE);
+        startActivityForResult(intent, StaticMember.CHOOSE_IMAGE_TYPE);
     }
 
     @Override
     public void cancel() {
-        dialog.cancel();
+        myDialogFileChose.cancel();
     }
 
 
@@ -567,7 +801,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         Log.i("","## choseFileIndex===="+choseFileIndex);
 
         // 拍照
-        if (requestCode == PHOTOHRAPH) {
+        if (requestCode == StaticMember.PHOTO_IMAGE_TYPE) {
             // 检查SDCard是否可用
             if(!AssistUtil.ExistSDCard()){
                 Log.i("", "SD card 不可用！");
@@ -576,7 +810,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
             }
             FileInputStream fis = null;
             try {
-                fis = new FileInputStream(photofilePath);
+                fis = new FileInputStream(ImagefilePath);
             } catch (FileNotFoundException e1) {
                 e1.printStackTrace();
             }
@@ -595,46 +829,51 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                 e.printStackTrace();
             }
             MyLogger.Log().i("## 111压缩前图片大小："+ CaremaUtil.getBitmapSize(bitmap));
-            Bitmap newPhoto = CaremaUtil.compressImage(bitmap,photofilePath);
+            Bitmap newPhoto = CaremaUtil.compressImage(bitmap,ImagefilePath);
             MyLogger.Log().i("## 222压缩后图片大小："+ CaremaUtil.getBitmapSize(newPhoto));
             //iv_image.setImageBitmap(newPhoto);
-
-            String fileName = FileUtil.getFileNameByPath(photofilePath);
-            listAttachData.get(choseFileIndex).put("file_path",photofilePath);
-            listAttachData.get(choseFileIndex).put("file_name",fileName);
-            MyLogger.Log().i("## file_name："+ fileName);
-            attachListViewAdapter.notifyDataSetChanged();
+            Message msg = new Message();
+            msg.arg1 = StaticMember.CHOOSE_IMAGE_RESULT;
+            msg.what = 1;
+            mHandler.sendMessage(msg);
             return;
         }
         if (data == null)
             return;
 
         // 选择文件
-        if(requestCode == CHOSE_FILE){
+        if(requestCode == StaticMember.CHOOSE_IMAGE_TYPE){
             Uri uri = data.getData();
             if ("file".equalsIgnoreCase(uri.getScheme())){//使用第三方应用打开
                 path = uri.getPath();
-                String fileName = uri.getScheme();
-                listAttachData.get(choseFileIndex).put("file_path",path);
-                listAttachData.get(choseFileIndex).put("file_name",fileName);
-                attachListViewAdapter.notifyDataSetChanged();
+                Log.e(TAG,"##111--=== path="+path);
+                ImagefilePath = uri.getPath();//获取图片的绝对路径
+                ImageFileName = uri.getScheme();
+                Message msg = new Message();
+                msg.arg1 = StaticMember.CHOOSE_IMAGE_RESULT;
+                msg.what = 1;
+                mHandler.sendMessage(msg);
                 return;
             }
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {//4.4以后
                 path = FileUtil.getPath(activity, uri);
-
-                String fileName = FileUtil.getFileNameByPath(path);
-                listAttachData.get(choseFileIndex).put("file_path",path);
-                listAttachData.get(choseFileIndex).put("file_name",fileName);
-                attachListViewAdapter.notifyDataSetChanged();
+                ImagefilePath = FileUtil.getPath(activity, uri);//获取图片的绝对路径
+                Log.e(TAG,"##222--=== path="+path);
                 // Toast.makeText(this,path,Toast.LENGTH_SHORT).show();
+                Message msg = new Message();
+                msg.arg1 = StaticMember.CHOOSE_IMAGE_RESULT;
+                msg.what = 1;
+                mHandler.sendMessage(msg);
+                return;
             } else {//4.4以下下系统调用方法
                 path = FileUtil.getRealPathFromURI(uri);
-                listAttachData.get(choseFileIndex).put("file_path",path);
-
-                String fileName = FileUtil.getFileNameByPath(path);
-                listAttachData.get(choseFileIndex).put("file_name",fileName);
-                attachListViewAdapter.notifyDataSetChanged();
+                ImagefilePath = FileUtil.getRealPathFromURI(uri);//获取图片的绝对路径
+                Log.e(TAG,"##333--=== path="+path);
+                Message msg = new Message();
+                msg.arg1 = StaticMember.CHOOSE_IMAGE_RESULT;
+                msg.what = 1;
+                mHandler.sendMessage(msg);
+                return;
             }
         }
 
@@ -683,15 +922,146 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
     }
 
 
-    // 定义一个消息处理handler
-    private Handler mHandler = new Handler() {
+    private boolean rightAdX  = true;
+    private boolean rightAdY  = true;
 
-        @SuppressLint("WrongConstant")
+    class EditChangedListener implements TextWatcher {
+        // 输入文本之前的状态
         @Override
-        public void handleMessage(Message msg) {
-            //
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            //Log.d("TAG", "beforeTextChanged--------------->");
+        }
+        // 输入文字中的状态，count是一次性输入字符数
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            //Log.d("TAG", "onTextChanged--------------->");
+        }
+        // 输入文字后的状态
+        @Override
+        public void afterTextChanged(Editable s) {
+            // Log.d("TAG", "afterTextChanged--------------->");
+            String adx = edittext_ad_x.getText().toString();
+            String ady = edittext_ad_y.getText().toString();
+            try {
+                double x = Double.parseDouble(adx);
+                rightAdX = true;
+            } catch (Exception e) {
+                edittext_ad_x.setText("");
+                showMessage("请输入正确的长度！");
+                rightAdX = false;
+            }
+            try {
+                double y = Double.parseDouble(ady);
+                rightAdY = true;
+            } catch (Exception e) {
+                edittext_ad_y.setText("");
+                showMessage("请输入正确的宽度！");
+                rightAdY = false;
+            }
+            if(rightAdX && rightAdY){
+                double adX = Double.parseDouble(adx);
+                double adY = Double.parseDouble(ady);
+                double adS = adX * adY;
+                edittext_ad_s.setText(adS+"");
+            }else{
+                rightAdX = false;
+                rightAdY = false;
+                edittext_ad_s.setText("");
+            }
         }
     };
+
+    // 设置监听
+    private void setListener() {
+
+        // 省、市、区级联监听
+        tv_city_area.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPickerView();
+            }
+        });
+
+        // 广告牌类型监听
+        tv_icon_type.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPickerViewAdType();
+            }
+        });
+    }
+
+    /**
+     * 选择省、市、区级联
+     */
+    private void showPickerView() {
+        if(options1Items.size() == 0){
+            Toast.makeText(this.activity,"数据未加载。",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        OptionsPickerView pvOptions = new OptionsPickerView.Builder(activity, new OptionsPickerView.OnOptionsSelectListener() {
+            @Override
+            public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                //返回的分别是三个级别的选中位置
+                String text = options1Items.get(options1).getPickerViewText() +"<br/>"+
+                        options2Items.get(options1).get(options2) +"<br/>"+
+                        options3Items.get(options1).get(options2).get(options3);
+
+                province = options1Items.get(options1).getPickerViewText();
+                city = options2Items.get(options1).get(options2);
+                area = options3Items.get(options1).get(options2).get(options3);
+
+                add_save.setVisibility(View.VISIBLE);
+
+                tv_city_area.setText(Html.fromHtml(text));
+            }
+        }).setTitleText("")
+                .setDividerColor(Color.GRAY)
+                .setTextColorCenter(Color.GRAY)
+                .setContentTextSize(14)
+                .setOutSideCancelable(false)
+                .build();
+          /*pvOptions.setPicker(options1Items);//一级选择器
+        pvOptions.setPicker(options1Items, options2Items);//二级选择器*/
+        pvOptions.setPicker(options1Items, options2Items, options3Items);//三级选择器
+        pvOptions.show();
+    }
+
+    /**
+     * 选择广告牌级联
+     */
+    private void showPickerViewAdType() {
+        if(optionsType1Items.size() == 0){
+            Toast.makeText(this.activity,"数据未加载。",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        OptionsPickerView pvOptions = new OptionsPickerView.Builder(activity, new OptionsPickerView.OnOptionsSelectListener() {
+            @Override
+            public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                //返回的分别是三个级别的选中位置
+                String text = optionsType1Items.get(options1).getPickerViewText() + "  \n"+
+                        optionsType2Items.get(options1).get(options2) +"  \n"+
+                        optionsType3Items.get(options1).get(options2).get(options3);
+
+                icon_type = optionsType1Items.get(options1).getPickerViewText();
+                icon_class = optionsType2Items.get(options1).get(options2);
+                icon_cnname = optionsType3Items.get(options1).get(options2).get(options3);
+
+                add_save.setVisibility(View.VISIBLE);
+
+                tv_icon_type.setText(Html.fromHtml(text));
+            }
+        }).setTitleText("")
+                .setDividerColor(Color.GRAY)
+                .setTextColorCenter(Color.GRAY)
+                .setContentTextSize(14)
+                .setOutSideCancelable(false)
+                .build();
+          /*pvOptions.setPicker(options1Items);//一级选择器
+        pvOptions.setPicker(options1Items, options2Items);//二级选择器*/
+        pvOptions.setPicker(optionsType1Items, optionsType2Items, optionsType3Items);//三级选择器
+        pvOptions.show();
+    }
 
     /**
      * 加载省、市、区级联数据

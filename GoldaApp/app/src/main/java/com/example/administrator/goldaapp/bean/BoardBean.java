@@ -70,12 +70,20 @@ public class BoardBean {
     private String facenum;
     private String li_height;
 
-//    private String email;
+    private String email;
 //    private String json_id;
 //    private String cat_id;
 //    private String start_time;
 //    private String end_time;
 
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getDe_id() {
         return de_id;

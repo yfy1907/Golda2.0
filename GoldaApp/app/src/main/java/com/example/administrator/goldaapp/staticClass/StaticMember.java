@@ -70,9 +70,23 @@ public class StaticMember {
     public static final int SEARCH = 104;
     public static final int BOARD_LIST = 105;
 
+    public static final int REQUEST_GREEN_DATA_RESULT = 106;
+    public static final int REQUEST_RED_DATE_RESULT = 107;
+    public static final int REQUEST_BOARD_LIST_DATE_RESULT = 108;
+
     public static final int LENGTH = 200;//当前位置与目标点的最远距离
     public static final int CLICK_LENGTH = 25;//点击marker显示周围x米的范围的marker
     public static final int RESULT_CAPTURE_IMAGE_1 = 2000;
+
+    public static final int UPLOAD_IMAGE_RESULT = 2001; // 上传图片结果
+    public static final int CHOOSE_IMAGE_RESULT = 2002; // 选择图片结果
+    public static final int CHOOSE_IMAGE_TYPE = 2003;   // 选择图片
+    public static final int PHOTO_IMAGE_TYPE = 2004;    // 拍照
+    public static final int SAVE_SHENBAO_DATA = 2005;   // 申报数据保存
+
+    public static final int CHOOSE_TYPE1 = 3000;
+    public static final int CHOOSE_TYPE2 = 3001;
+    public static final int CHOOSE_TYPE3 = 3002;
 
 
     public static String[] problemStr = { "无问题", "一般", "严重","非常严重" };
