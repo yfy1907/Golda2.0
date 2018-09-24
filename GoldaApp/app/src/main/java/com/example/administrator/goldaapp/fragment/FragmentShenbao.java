@@ -4,6 +4,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,11 +21,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BaseTransientBottomBar;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
@@ -32,7 +33,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,9 +48,6 @@ import android.widget.Toast;
 
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.example.administrator.goldaapp.R;
-import com.example.administrator.goldaapp.activity.ModifyLatLngActivity;
-import com.example.administrator.goldaapp.activity.RedMarkerDetail;
-import com.example.administrator.goldaapp.bean.AdRedBean;
 import com.example.administrator.goldaapp.bean.BoardBean;
 import com.example.administrator.goldaapp.bean.JsonBean;
 import com.example.administrator.goldaapp.common.JsonFileReader;
@@ -57,18 +55,17 @@ import com.example.administrator.goldaapp.common.MyLogger;
 import com.example.administrator.goldaapp.staticClass.StaticMember;
 import com.example.administrator.goldaapp.utils.AssistUtil;
 import com.example.administrator.goldaapp.utils.CaremaUtil;
-import com.example.administrator.goldaapp.utils.CommonTools;
 import com.example.administrator.goldaapp.utils.DateHelper;
 import com.example.administrator.goldaapp.utils.FileUtil;
 import com.example.administrator.goldaapp.adapter.AttachListViewAdapter;
 import com.example.administrator.goldaapp.utils.HttpTools;
 import com.example.administrator.goldaapp.utils.MultiTool;
 import com.example.administrator.goldaapp.utils.SFTPChannel;
-import com.example.administrator.goldaapp.utils.StringUtil;
 import com.example.administrator.goldaapp.utils.httpsupport.AsyncTaskOwner;
 import com.example.administrator.goldaapp.view.MyDialogFileChose;
 import com.google.gson.Gson;
 
+import org.apache.harmony.awt.internal.nls.Messages;
 import org.json.JSONArray;
 
 import java.io.File;
@@ -185,7 +182,6 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
     private BoardBean boardBean;              // 保存数据对象
     private String de_id = "0";       // 申报ID，0表示新增，否则修改
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         activity = getActivity();
@@ -276,12 +272,16 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         // 锁定屏幕
         this.activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        // android 7.0系统解决拍照的问题
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        builder.detectFileUriExposure();
     }
 
     //初始化TabHost
@@ -369,7 +369,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
             map.put("file_id",""+i);
             listAttachData.add(map);
         }
-        attachListViewAdapter = new AttachListViewAdapter(activity, AddFileDialogControl, RemoveFileDialogControl,listAttachData);
+        attachListViewAdapter = new AttachListViewAdapter(activity, AddFileDialogControl, RemoveFileDialogControl,listAttachData,addAttachListView);
         addAttachListView.setAdapter(attachListViewAdapter);
     }
 
@@ -388,6 +388,10 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
             choseFileIndex = position;
         }
     };
+
+    private void showMessage(String message){
+        Toast.makeText(this.activity,message,Toast.LENGTH_SHORT).show();
+    }
 
     /**
      * 移除图片信息附件选择弹出框
@@ -529,10 +533,11 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
             msgTips = "<font color=red>您尚未上传图片文件，确定要保存吗?</font>";
         }else if(imageSize < attachArray.length){
             msgTips = "您上传了"+imageSize+"张文件，剩余"+(attachArray.length - imageSize)+"张文件未上传，确认保存吗?";
-            msgTips += "<br/><font color=red>*提交后不能修改</font>";
         }else{
             msgTips = "确定要保存吗?";
         }
+        msgTips += "<br/><br/><font color=red>*提交后不能修改</font>";
+
         Log.i(TAG,"### msgTips="+msgTips+"; size="+imageSize+"; attachArray.length="+attachArray.length);
         AlertDialog.Builder builder = new AlertDialog.Builder(this.activity);
         builder.setMessage(Html.fromHtml(msgTips));
@@ -637,6 +642,8 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         }).start();
     }
 
+
+
     // 定义一个消息处理handler
     private Handler mHandler = new Handler() {
         @Override
@@ -649,9 +656,11 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                     // 获取上传图片的文件名称显示在lieb列表中
                     // String fileName = FileUtil.getFileNameByPath(ImagefilePath);
                     listAttachData.get(choseFileIndex).put("file_path",ImagefilePath);
-                    listAttachData.get(choseFileIndex).put("file_name",ImageFileName);
-                    MyLogger.Log().i("## 操作成功::: ImageFileName："+ ImageFileName+"; ImagefilePath="+ImagefilePath);
-                    attachListViewAdapter.notifyDataSetChanged();
+                    listAttachData.get(choseFileIndex).put("file_name",StaticMember.RemotePath + today + "/" + ImageFileName);
+                    MyLogger.Log().i("## 操作成功::: ImageFileName："+ ImageFileName);
+//                    attachListViewAdapter.notifyDataSetChanged();
+                    attachListViewAdapter.update(choseFileIndex,addAttachListView);
+
                     ImagefilePath = "";
                     ImageFileName = "";
                     showMessage("文件上传成功！");
@@ -680,6 +689,8 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                 if(msg.what == 1){
                     // 保存成功
                     showMessage("数据保存成功！");
+
+                    goBoardFragment();
                 }else if(msg.what == 0){
                     // 保存失败
                     showMessage("数据保存失败，请重试！");
@@ -689,8 +700,15 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         }
     };
 
-    private void showMessage(String message){
-        Toast.makeText(this.activity,message,Toast.LENGTH_SHORT).show();
+    private void goBoardFragment(){
+//        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager().beginTransaction();
+//        Fragment boardFragment = new FragmentBoard();
+//        Bundle bundle = new Bundle();
+//        bundle.putString("key", "refresh");
+//        boardFragment.setArguments(bundle);
+//        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.content,boardFragment);
+//        fragmentTransaction.addToBackStack(null);
+//        fragmentTransaction.commit();
     }
 
     /**
@@ -787,7 +805,6 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         myDialogFileChose.cancel();
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
@@ -882,6 +899,11 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
     public void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
+//        Object obj = getArguments().getSerializable("BoardBean");
+//        if(null != obj){
+//            BoardBean boardBean = (BoardBean) obj;
+//            Log.i("","### 广告牌接收参数不为空！！");
+//        }
     }
 
     //内部类实现viewpager的适配器
@@ -937,7 +959,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         // 输入文字后的状态
         @Override
         public void afterTextChanged(Editable s) {
-            Log.d("TAG", "afterTextChanged--------------->");
+            //Log.d("TAG", "afterTextChanged--------------->");
             String adx = edittext_ad_x.getText().toString();
             String ady = edittext_ad_y.getText().toString();
             if(null != adx && !"".equals(adx)){
@@ -960,7 +982,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
             }
 
             if(rightAdX && rightAdY){
-                if(null != adx && !"".equals(adx) && null != adx && !"".equals(adx)){
+                if(null != adx && !"".equals(adx) && null != ady && !"".equals(ady)){
                     double adX = Double.parseDouble(adx);
                     double adY = Double.parseDouble(ady);
                     double adS = adX * adY;

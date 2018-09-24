@@ -1,17 +1,24 @@
 package com.example.administrator.goldaapp.adapter;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.administrator.goldaapp.R;
 import com.example.administrator.goldaapp.bean.BoardBean;
@@ -25,6 +32,7 @@ import java.util.List;
 
 public class LoadMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private Activity activity;
     private List<BoardBean> dataList;
     private OnItemClickListener mClickListener;
 
@@ -43,14 +51,15 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     // 内部接口，点击查看或编辑
     public interface OnItemClickListener {
-        void onItemClick(View view,int postion);
+        void onItemClick(View view);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.mClickListener = listener;
     }
 
-    public LoadMoreAdapter(List<BoardBean> dataList) {
+    public LoadMoreAdapter(Activity activity,List<BoardBean> dataList) {
+        this.activity = activity;
         this.dataList = dataList;
     }
 
@@ -69,8 +78,19 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         // 通过判断显示类型，来创建不同的View
         if (viewType == TYPE_ITEM) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_board_listview_item, parent, false);
+            RecyclerView.ViewHolder viewHolder = new RecyclerViewHolder(view);
 
-            return new RecyclerViewHolder(view);
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("WrongConstant")
+                @Override
+                public void onClick(View view) {
+//                    Toast.makeText(activity, view.getTag() + "", 1000).show();
+                    if(null != mClickListener){
+                        mClickListener.onItemClick(view);
+                    }
+                }
+            });
+            return viewHolder;
 
         } else if (viewType == TYPE_FOOTER) {
 
@@ -153,18 +173,20 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 holder.board_state_ba.setBackgroundResource(R.drawable.shape_board_button_state2);
             }
 
+
+
             final String confirm_status = board.getConfirm_status(); // 1只能查看， 0可以修改
+
+            if("1".equals(confirm_status)){
+                holder.btn_query.setText(" 查 看 ");
+                holder.btn_query.setBackgroundColor(Color.parseColor("#FFCCCCCC"));
+            }else{
+                holder.btn_query.setText(" 处 理 ");
+                holder.btn_query.setBackgroundColor(Color.parseColor("#FF4F99C6"));
+            }
+
             Log.e("TAG", "getItemCount: "+dataList.size() );
             holder.itemView.setTag(position);
-
-            holder.btn_query.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(mClickListener != null){
-                        mClickListener.onItemClick(holder.itemView,holder.getLayoutPosition());
-                    }
-                }
-            });
 
         } else if (viewHolder instanceof FootViewHolder) {
             FootViewHolder footViewHolder = (FootViewHolder) viewHolder;
@@ -214,7 +236,7 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    private class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
         public CardView board_card;
         public TextView text_company;
@@ -242,15 +264,6 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             board_state_sh = (TextView) itemView.findViewById(R.id.board_state_sh);
             board_state_ba = (TextView) itemView.findViewById(R.id.board_state_ba);
             btn_query = (Button) itemView.findViewById(R.id.btn_query);
-
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if(mClickListener != null){
-                mClickListener.onItemClick(view,(Integer) view.getTag());
-            }
         }
     }
 

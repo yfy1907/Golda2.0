@@ -28,12 +28,13 @@ import com.example.administrator.goldaapp.utils.AppManager;
 
 public class MainFragmentActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private FragmentTransaction fragmentTransaction;
+
     // 定位四个Fragment
     private Fragment shenbaoFragment = new FragmentShenbao();
     private Fragment xunchaFragment = new FragmentXuncha();
     private Fragment boardFragment = new FragmentBoard();
     private Fragment meFragment = new FragmentMe();
-
 
     // tab中的四个帧布局
     private FrameLayout frame_layout_shenbao, frame_layout_xuncha, frame_layout_board, frame_layout_me;
@@ -54,6 +55,13 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_main);
+
+
+        // android 7.0系统解决拍照的问题
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        builder.detectFileUriExposure();
+
 
         AppManager.getAppManager().finishActivity(MainFragmentActivity.class);
         Log.i("", "#### onCreate。。。。————————————————————>>>>>>>>>");
@@ -85,7 +93,7 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
      * 初始化所有fragment
      */
     private void initFragment() {
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction = getFragmentManager().beginTransaction();
         if (!shenbaoFragment.isAdded()) {
             fragmentTransaction.add(R.id.content, shenbaoFragment);
             fragmentTransaction.hide(shenbaoFragment);

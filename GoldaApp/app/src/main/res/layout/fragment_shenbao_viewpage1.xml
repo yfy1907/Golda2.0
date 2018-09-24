@@ -68,7 +68,9 @@
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
                     android:layout_marginBottom="4.0dp"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edittext_area_line"/>
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -94,7 +96,9 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edittext_company"/>
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -120,7 +124,9 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edittext_company_address" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -146,7 +152,9 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edittext_person" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -172,7 +180,9 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edittext_person" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -199,7 +209,9 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edittext_process_contact" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -225,7 +237,9 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edittext_process_tel" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -251,11 +265,12 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edittext_email" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -278,7 +293,9 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edittext_process_tel" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -333,7 +350,9 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edittext_wt" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -449,7 +468,6 @@
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -499,7 +517,9 @@
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
                     android:background="@color/white"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edittext_li_height" />
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />
@@ -526,7 +546,8 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:inputType="numberDecimal"/>
 
             </LinearLayout>
             <LinearLayout style="@style/common_horizontal_division_line_style" />

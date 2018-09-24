@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
     </style>
 
     <!--消除启动白屏-->
@@ -16,8 +17,10 @@
     <!--隐藏ActionBar-->
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
     </style>
-    <style name="MyAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+
+    <style name="MyAppTheme" parent="AppTheme.NoActionBar">
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">false</item>
     </style>

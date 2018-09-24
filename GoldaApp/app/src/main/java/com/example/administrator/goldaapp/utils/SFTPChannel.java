@@ -55,7 +55,7 @@ public class SFTPChannel{
             for ( String folder : folders ) {
                 if ( folder.length() > 0 ) {
                     try {
-                        Log.e("即将验证的文件夹：",folder);
+//                        Log.e("即将验证的文件夹：",folder);
                         temp+=folder;
                         ((ChannelSftp) channel).cd(temp);  //如果不存在就在异常中添加文件夹
                         //((ChannelSftp) channel).ls(folder);

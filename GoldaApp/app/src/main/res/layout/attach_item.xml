@@ -24,13 +24,22 @@
             android:layout_weight="1"
             android:ellipsize="end" 
             android:textColor="@color/black" />
+
+        <ImageView
+            android:id="@+id/iv_view_small"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="20dp"
+            android:visibility="gone" />
+
         <ImageView
             android:id="@+id/iv_add_attach"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/add_pic"
             android:layout_marginRight="4dp"
-            android:paddingRight="6dp"/>
+            android:paddingRight="6dp"
+            android:layout_gravity="right" />
 
     </LinearLayout>
 

@@ -55,6 +55,7 @@ import com.example.administrator.goldaapp.activity.SearchActivity;
 import com.example.administrator.goldaapp.bean.AdGreenBean;
 import com.example.administrator.goldaapp.bean.AdRedBean;
 import com.example.administrator.goldaapp.bean.MarkerInfo;
+import com.example.administrator.goldaapp.common.MyLogger;
 import com.example.administrator.goldaapp.staticClass.StaticMember;
 import com.example.administrator.goldaapp.utils.AppManager;
 import com.example.administrator.goldaapp.utils.CommonTools;
@@ -84,7 +85,6 @@ import butterknife.Unbinder;
 import static android.content.Context.MODE_PRIVATE;
 
 public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickListener, BaiduMap.OnMarkerClickListener {
-
 
     private Unbinder unbinder;
 
@@ -418,7 +418,17 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
                 else {
                     Log.e("准备绘制红色广告marker", adredList.size() + "个");
                     int index =0;
+                    boolean redFlag = false;
                     for (int i = 0,len=adredList.size(); i < len; i++) {
+                        if(adredList.get(i) instanceof AdRedBean){
+                            redFlag = true;
+                        }else{
+                            redFlag = false;
+                        }
+                        if(!redFlag){
+                            continue;
+                        }
+
                         index = DrawableTool.getValue("red_" + adredList.get(i).getIcon());
                         if(index ==0){
                             continue;
@@ -468,10 +478,10 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
      */
     public void showSnackBar(String message) {
         //去掉虚拟按键
-        activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION //隐藏虚拟按键栏
-                | View.SYSTEM_UI_FLAG_IMMERSIVE //防止点击屏幕时,隐藏虚拟按键栏又弹了出来
-        );
+//        activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION //隐藏虚拟按键栏
+//                | View.SYSTEM_UI_FLAG_IMMERSIVE //防止点击屏幕时,隐藏虚拟按键栏又弹了出来
+//        );
         final Snackbar snackbar = Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_INDEFINITE);
         CommonTools.setSnackbarMessageTextColor(snackbar, getResources().getColor(R.color.orange));
 
@@ -493,8 +503,12 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
         adgreenList=null;
         Log.e("从服务器加载信息", "getDataFromServer");
         lastRefreshPoint = centerMarkerLL;//每从服务器加载一次，刷新点也在这里
-        if (HttpTools.isNetworkConnected(activity) == false || centerMarkerLL == null) {
+        if (HttpTools.isNetworkConnected(activity) == false) {
             showSnackBar("网络连接失败，请检查网络连接");
+            return;
+        }
+        if (centerMarkerLL == null) {
+            showSnackBar("获取中心点位置失败");
             return;
         }
         ExecutorService dataThreadPool = Executors.newSingleThreadExecutor();
@@ -711,9 +725,11 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 10010)//添加广告1001
         {
+            Log.i("","--------------11111");
             getDataFromServer();
         } else if (requestCode == 10020)//修改广告1002
         {
+            Log.i("","--------------22222");
             getDataFromServer();
         }
     }
@@ -895,6 +911,7 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
         public void onReceiveLocation(BDLocation location) {
             // map view 销毁后不在处理新接收的位置
             if (location == null || mMapView == null) {
+                MyLogger.Log().e("位置信息为空！");
                 return;
             }
 //            Log.e("定位", "*****************");
@@ -978,7 +995,7 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
 
         Log.i(",","### FragmentXuncha onResume.....");
 
-        getDataFromServer();
+        // getDataFromServer();
     }
 
     @Override

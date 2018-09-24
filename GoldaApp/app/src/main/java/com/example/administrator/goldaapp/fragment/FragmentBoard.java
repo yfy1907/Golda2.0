@@ -1,6 +1,8 @@
 package com.example.administrator.goldaapp.fragment;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,12 +19,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.administrator.goldaapp.R;
 import com.example.administrator.goldaapp.adapter.BoradRecyclerViewAdapter;
 import com.example.administrator.goldaapp.adapter.EndlessRecyclerOnScrollListener;
 import com.example.administrator.goldaapp.adapter.LoadMoreAdapter;
 import com.example.administrator.goldaapp.bean.BoardBean;
+import com.example.administrator.goldaapp.common.MyLogger;
 import com.example.administrator.goldaapp.staticClass.StaticMember;
 import com.example.administrator.goldaapp.utils.CommonTools;
 import com.example.administrator.goldaapp.utils.HttpTools;
@@ -54,12 +58,11 @@ public class FragmentBoard extends BaseFragment {
         // 绑定组件
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-
         recycleBoard = (RecyclerView) view.findViewById(R.id.recycle_board);
         text_no_data = (TextView) view.findViewById(R.id.text_no_data);
-
         // 设置刷新控件颜色
         swipeRefreshLayout.setColorSchemeColors(Color.parseColor("#4DB6AC"));
+        listdata = new ArrayList<BoardBean>();
 
         return view;
     }
@@ -69,25 +72,15 @@ public class FragmentBoard extends BaseFragment {
 //        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 //        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
-        listdata = new ArrayList<BoardBean>();
-        loadMoreAdapter = new LoadMoreAdapter(listdata);
-        loadMoreAdapter.setOnItemClickListener(onItemClickListener);
-        recycleBoard.setLayoutManager(new LinearLayoutManager(this.activity));
-        recycleBoard.setAdapter(loadMoreAdapter);
-
-        if(listdata.size() == 0){
-            text_no_data.setVisibility(View.VISIBLE);
-        }else{
-            text_no_data.setVisibility(View.GONE);
-        }
-
+        getRecycleViewData();
         // 设置下拉刷新
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 // 刷新数据
-                listdata.clear();
-                loadMoreAdapter.notifyDataSetChanged();
+//                listdata.clear();
+//                loadMoreAdapter.notifyDataSetChanged();
+
                 searchAndShow(StaticMember.USER.getUid());
                 // 延时1s关闭下拉刷新
                 swipeRefreshLayout.postDelayed(new Runnable() {
@@ -124,14 +117,58 @@ public class FragmentBoard extends BaseFragment {
         searchAndShow(StaticMember.USER.getUid());
     }
 
-    private LoadMoreAdapter.OnItemClickListener onItemClickListener = new LoadMoreAdapter.OnItemClickListener(){
+    private void getRecycleViewData(){
+        loadMoreAdapter = new LoadMoreAdapter(this.activity,listdata);
+        recycleBoard.setLayoutManager(new LinearLayoutManager(this.activity));
+        recycleBoard.setAdapter(loadMoreAdapter);
+        loadMoreAdapter.setOnItemClickListener(onOnItemClickListener);
+
+        if(listdata.size() == 0){
+            text_no_data.setVisibility(View.VISIBLE);
+        }else{
+            text_no_data.setVisibility(View.GONE);
+        }
+    }
+
+    private LoadMoreAdapter.OnItemClickListener onOnItemClickListener = new LoadMoreAdapter.OnItemClickListener() {
         @Override
-        public void onItemClick(View view, int postion) {
-            String confirmState = listdata.get(postion).getConfirm_status();
-            String de_id = listdata.get(postion).getDe_id();
-            Log.i("","### confirmState="+confirmState+"; de_id=="+de_id);
+        public void onItemClick(View view) {
+//            Toast.makeText(activity, view.getTag() + "", 1000).show();
+
+            int position = (int) view.getTag();
+            MyLogger.Log().i("## 当前点击列表索引："+position);
+//            String de_id = listdata.get(position).getDe_id();
+            goShenbaoFragment(listdata.get(position));
         }
     };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        String key = getArguments().getString("key");
+//        MyLogger.Log().i("#####------ key="+key);
+//        if("refresh".equals(key)){
+//            getRecycleViewData();
+//        }
+    }
+
+    private void goShenbaoFragment(BoardBean boardBean){
+//        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager().beginTransaction();
+//        Fragment shenbaoFragment = new FragmentShenbao();
+//        Bundle bundle = new Bundle();
+//        bundle.putSerializable("BoardBean", boardBean);
+//        shenbaoFragment.setArguments(bundle);
+//        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.content,shenbaoFragment);
+//        fragmentTransaction.addToBackStack(null);
+//        fragmentTransaction.commit();
+    }
+
+
+    public void onItemClick(View view, int postion) {
+        String confirmState = listdata.get(postion).getConfirm_status();
+        String de_id = listdata.get(postion).getDe_id();
+        Log.i("","### confirmState="+confirmState+"; de_id=="+de_id);
+    }
 
     public void searchAndShow(final String uid) {
         final Handler handler = new Handler() {
@@ -141,22 +178,12 @@ public class FragmentBoard extends BaseFragment {
                 if (msg.what == StaticMember.REQUEST_BOARD_LIST_DATE_RESULT) {
                     
                     Log.e("查到的广告数", listdata.size() + "个");
-                    loadMoreAdapter = new LoadMoreAdapter(listdata);
-                    loadMoreAdapter.setOnItemClickListener(onItemClickListener);
-                    recycleBoard.setLayoutManager(new LinearLayoutManager(activity));
-                    recycleBoard.setAdapter(loadMoreAdapter);
-
-                    if(listdata.size() == 0){
-                        text_no_data.setVisibility(View.VISIBLE);
-                    }else{
-                        text_no_data.setVisibility(View.GONE);
-                    }
+                    getRecycleViewData();
                     if(null != baseToolbar){
                         Snackbar sn = Snackbar.make(baseToolbar, "共查找到" + listdata.size() + "个广告牌", BaseTransientBottomBar.LENGTH_SHORT);
                         CommonTools.setSnackbarMessageTextColor(sn, getResources().getColor(R.color.orange));
                         sn.show();
                     }
-
                 }
             }
         };
@@ -176,4 +203,5 @@ public class FragmentBoard extends BaseFragment {
 
         super.onDestroyView();
     }
+
 }

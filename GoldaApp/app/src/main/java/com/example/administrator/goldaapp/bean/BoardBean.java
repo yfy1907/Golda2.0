@@ -1,6 +1,8 @@
 package com.example.administrator.goldaapp.bean;
 
-public class BoardBean {
+import java.io.Serializable;
+
+public class BoardBean implements Serializable {
 
     private String de_id;
     private String board_id;
@@ -75,6 +77,81 @@ public class BoardBean {
 //    private String cat_id;
 //    private String start_time;
 //    private String end_time;
+
+    @Override
+    public String toString() {
+        return "BoardBean{" +
+                "de_id='" + de_id + '\'' +
+                ", board_id='" + board_id + '\'' +
+                ", uid='" + uid + '\'' +
+                ", ac_id='" + ac_id + '\'' +
+                ", dateline='" + dateline + '\'' +
+                ", province='" + province + '\'' +
+                ", city='" + city + '\'' +
+                ", area='" + area + '\'' +
+                ", address='" + address + '\'' +
+                ", area_line='" + area_line + '\'' +
+                ", mediatype='" + mediatype + '\'' +
+                ", company='" + company + '\'' +
+
+                ", b_attach_1='" + b_attach_1 + '\'' +
+                ", b_attach_2='" + b_attach_2 + '\'' +
+                ", b_attach_3='" + b_attach_3 + '\'' +
+                ", b_attach_4='" + b_attach_4 + '\'' +
+                ", b_attach_5='" + b_attach_5 + '\'' +
+                ", b_attach_6='" + b_attach_6 + '\'' +
+                ", b_attach_7='" + b_attach_7 + '\'' +
+                ", b_attach_8='" + b_attach_8 + '\'' +
+                ", b_attach_9='" + b_attach_9 + '\'' +
+                ", b_attach_10='" + b_attach_10 + '\'' +
+                ", b_attach_11='" + b_attach_11 + '\'' +
+                ", b_attach_12='" + b_attach_12 + '\'' +
+                ", b_attach_13='" + b_attach_13 + '\'' +
+                ", b_attach_14='" + b_attach_14 + '\'' +
+                ", b_attach_15='" + b_attach_15 + '\'' +
+                ", b_attach_16='" + b_attach_16 + '\'' +
+                ", b_attach_17='" + b_attach_17 + '\'' +
+                ", b_attach_18='" + b_attach_18 + '\'' +
+                ", b_attach_19='" + b_attach_19 + '\'' +
+                ", b_attach_20='" + b_attach_20 + '\'' +
+
+                ", status='" + status + '\'' +
+                ", copy_status='" + copy_status + '\'' +
+                ", lead_idea='" + lead_idea + '\'' +
+                ", dis_idea='" + dis_idea + '\'' +
+                ", dis_time='" + dis_time + '\'' +
+                ", first_idea='" + first_idea + '\'' +
+                ", wt='" + wt + '\'' +
+                ", local_check='" + local_check + '\'' +
+                ", local_idea='" + local_idea + '\'' +
+                ", status_time='" + status_time + '\'' +
+                ", send_log='" + send_log + '\'' +
+                ", process_contact='" + process_contact + '\'' +
+                ", process_tel='" + process_tel + '\'' +
+                ", company_address='" + company_address + '\'' +
+                ", accept_uid='" + accept_uid + '\'' +
+                ", local_time='" + local_time + '\'' +
+                ", confirm_status='" + confirm_status + '\'' +
+                ", icon='" + icon + '\'' +
+                ", icon_type='" + icon_type + '\'' +
+                ", icon_class='" + icon_class + '\'' +
+                ", icon_cnname='" + icon_cnname + '\'' +
+
+                ", person='" + person + '\'' +
+                ", contact='" + contact + '\'' +
+                ", ad_x='" + ad_x + '\'' +
+                ", ad_y='" + ad_y + '\'' +
+                ", ad_s='" + ad_s + '\'' +
+                ", material='" + material + '\'' +
+                ", material_time='" + material_time + '\'' +
+                ", model='" + model + '\'' +
+                ", facenum='" + facenum + '\'' +
+                ", li_height='" + li_height + '\'' +
+                ", email='" + email + '\'' +
+
+
+                '}';
+    }
 
 
     public String getEmail() {

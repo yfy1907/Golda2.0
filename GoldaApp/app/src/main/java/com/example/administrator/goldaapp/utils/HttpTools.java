@@ -286,7 +286,6 @@ public class HttpTools {
         Request.Builder requestBuilder=new Request.Builder().url(url);
         Request request=requestBuilder.build();
         Call call = mOkHttpClient.newCall(request);
-
         try {
             Response response=call.execute();
             InputStream is=response.body().byteStream();
@@ -304,10 +303,8 @@ public class HttpTools {
      */
     public static boolean isNetworkConnected(Context context) {
         if (context != null) {
-            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo mNetworkInfo = mConnectivityManager
-                    .getActiveNetworkInfo();
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
             if (mNetworkInfo != null && mNetworkInfo.isConnected()) {
                 // 判断当前网络是否已经连接
                 if (mNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {

@@ -35,10 +35,7 @@
         android:orientation="horizontal"
         android:background="@color/white"
         android:layout_marginTop="1dp"
-        android:layout_marginBottom="1dp"
-        >
-
-
+        android:layout_marginBottom="1dp" >
         <!-- 按钮 -->
         <!-- 使用FrameLayout，最主要的原因是使用它可以很容易的再添加一个消息提醒的小图片 -->
         <FrameLayout
@@ -54,8 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|center"
-                android:src="@drawable/icon_menu_1_on"
-                android:visibility="gone" />
+                android:src="@drawable/icon_menu_1_on" />
 
             <TextView
                 android:id="@+id/textview_shenbao"
@@ -63,8 +59,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/main_fragment_menu_1"
                 android:textColor="@color/orange"
-                android:layout_gravity="center"
-                android:textSize="18sp" />
+                android:layout_gravity="bottom|center"
+                android:textSize="12sp" />
 
             <!--android:layout_gravity="bottom|center"-->
 
@@ -84,8 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|center"
-                android:src="@drawable/icon_menu_2_off"
-                android:visibility="gone" />
+                android:src="@drawable/icon_menu_2_off" />
 
             <TextView
                 android:id="@+id/textview_xuncha"
@@ -93,8 +88,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/main_fragment_menu_2"
                 android:textColor="#999999"
-                android:layout_gravity="center"
-                android:textSize="18sp" />
+                android:layout_gravity="bottom|center"
+                android:textSize="12sp" />
         </FrameLayout>
 
         <!-- 广告牌按钮 -->
@@ -111,8 +106,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|center"
-                android:src="@drawable/icon_menu_3_off"
-                android:visibility="gone" />
+                android:src="@drawable/icon_menu_3_off"  />
 
             <TextView
                 android:id="@+id/textview_board"
@@ -120,8 +114,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/main_fragment_menu_3"
                 android:textColor="#999999"
-                android:layout_gravity="center"
-                android:textSize="18sp" />
+                android:layout_gravity="bottom|center"
+                android:textSize="12sp" />
         </FrameLayout>
 
         <!-- 我按钮 -->
@@ -138,8 +132,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|center"
-                android:src="@drawable/icon_menu_4_off"
-                android:visibility="gone" />
+                android:src="@drawable/icon_menu_4_off" />
 
             <TextView
                 android:id="@+id/textview_me"
@@ -147,8 +140,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/main_fragment_menu_4"
                 android:textColor="#999999"
-                android:layout_gravity="center"
-                android:textSize="18sp" />
+                android:layout_gravity="bottom|center"
+                android:textSize="12sp" />
         </FrameLayout>
 
     </LinearLayout>

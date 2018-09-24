@@ -202,7 +202,7 @@ public class WelecomeActivity extends Activity implements ActivityCompat.OnReque
             verName = BuildConfig.VERSION_NAME;
             Log.i(TAG,"verName===="+verName);
             if(null != tv_verName){
-                tv_verName.setText(verName);
+                tv_verName.setText(verName+"（演示）");
             }
         }catch (Exception e) {
             e.printStackTrace();
