@@ -20,6 +20,7 @@ import android.util.Log;
 import com.example.administrator.goldaapp.utils.AssistUtil;
 import com.example.administrator.goldaapp.utils.HttpTools;
 import com.example.administrator.goldaapp.utils.MD5Util;
+import com.example.administrator.goldaapp.utils.StringUtil;
 
 public class SyncImageLoader {
 
@@ -69,7 +70,7 @@ public class SyncImageLoader {
 
     public void loadImage(Integer t, String imageUrl, OnImageLoadListener listener) {
 
-        MyLogger.Log().d("imageUrl="+imageUrl);
+        // MyLogger.Log().d("imageUrl="+imageUrl);
         final OnImageLoadListener mListener = listener;
         final String mImageUrl = imageUrl;
         final Integer mt = t;
@@ -106,6 +107,7 @@ public class SyncImageLoader {
             SoftReference<Drawable> softReference = imageCache.get(mImageUrl);
             final Drawable d = softReference.get();
             if (d != null) {
+                //MyLogger.Log().w("111缓存中存在图片:"+mImageUrl+";=-=-=-=-=-=-="+mt);
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -143,6 +145,9 @@ public class SyncImageLoader {
 
     public static Drawable loadImageFromUrl(String url) throws IOException {
 
+        if(StringUtil.isEmpty(url)){
+            return null;
+        }
         //Log.i("","###url=="+url);
         if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
             String imagePath = AssistUtil.getMemoryPath() + "uploadImage/"+ MD5Util.MD5(url);
@@ -152,23 +157,22 @@ public class SyncImageLoader {
                 FileInputStream fis = new FileInputStream(f);
                 Drawable d = Drawable.createFromStream(fis, "src");
                 fis.close();
+
+                //MyLogger.Log().w("222缓存中存在图片:"+url);
                 return d;
             }
 
             Bitmap bitmap = HttpTools.getUrlImage(url);
             if(null != bitmap){
-                MyLogger.Log().i("## bitmap 转换成图片："+bitmap.getByteCount());
+                //MyLogger.Log().i("##333 在线加载图片："+url);
                 Drawable d = new BitmapDrawable(bitmap);
-//                if(null != bitmap){
-//                    bitmap.recycle();
-//                }
                 return d;
             }else{
                 return null;
             }
 //            return loadImageFromUrl(url);
-
         }else{
+            //MyLogger.Log().i("##444 在线加载图片："+url);
             URL m = new URL(url);
             InputStream i = (InputStream) m.getContent();
             Drawable d = Drawable.createFromStream(i, "src");

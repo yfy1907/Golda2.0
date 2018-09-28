@@ -1,6 +1,5 @@
 package com.example.administrator.goldaapp.adapter;
 
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
@@ -20,8 +19,6 @@ import com.example.administrator.goldaapp.common.SyncImageLoader;
 import com.example.administrator.goldaapp.staticClass.StaticMember;
 import com.example.administrator.goldaapp.utils.StringUtil;
 
-import org.apache.harmony.awt.internal.nls.Messages;
-
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -33,7 +30,6 @@ public class AttachListViewAdapter extends BaseAdapter {
     private Activity activity;
 
     private ListView mListView;
-    private LayoutInflater inflater;
     private ArrayList<Map<String, String>> listData;
 
     private IDialogControl dialogControl;
@@ -44,13 +40,11 @@ public class AttachListViewAdapter extends BaseAdapter {
     @SuppressLint("WrongConstant")
     public AttachListViewAdapter(Activity activity, IDialogControl dialogControl,IDialogControl dialog2Control,
                                  ArrayList<Map<String, String>> paramList, ListView listView) {
-
         this.mListView = listView;
         this.activity = activity;
         this.listData = paramList;
         this.dialogControl = dialogControl;
         this.dialog2Control = dialog2Control;
-        this.inflater = ((LayoutInflater) activity.getSystemService("layout_inflater"));
     }
 
     public int getCount() {
@@ -87,7 +81,9 @@ public class AttachListViewAdapter extends BaseAdapter {
         viewHolder.iv_add_attach.setOnClickListener(new AddFileImageOnClickListener(paramInt));
         // 设置点击缩略图删除
         viewHolder.iv_view_small.setOnClickListener(new RemoveFileImageOnClickListener(paramInt));
+        viewHolder.iv_view_small.setTag(listData.get(paramInt).get("file_name"));
 
+        setData(viewHolder.iv_view_small, paramInt);
         return convertView;
     }
 
@@ -105,17 +101,12 @@ public class AttachListViewAdapter extends BaseAdapter {
         View view = listview.getChildAt(index - visiblePosition);
         ImageView iv_view_small = ((ImageView) view.findViewById(R.id.iv_view_small));
         setData(iv_view_small,index);
-
-//        ViewHolder holder = (ViewHolder) view.getTag();
-//        holder.iv_view_small =((ImageView) view.findViewById(R.id.iv_view_small));
-//        holder.iv_view_small.setVisibility(View.VISIBLE);
-//        setData(holder,index);
     }
 
     private void setData(ImageView imageview,int index){
         String imageUrl = listData.get(index).get("file_name");
         if(!StringUtil.isEmpty(imageUrl)){
-            MyLogger.Log().d("## 加载图片地址====="+imageUrl);
+            // MyLogger.Log().d("## 加载图片地址====="+imageUrl);
             if(!imageUrl.contains(StaticMember.ImageURL)){
                 syncImageLoader.loadImage(index,StaticMember.ImageURL+imageUrl,imageLoadListener);
             }else{
@@ -123,31 +114,35 @@ public class AttachListViewAdapter extends BaseAdapter {
             }
             imageview.setVisibility(View.VISIBLE);
         }else{
-            imageview.setVisibility(View.GONE);
+            imageview.setImageDrawable(activity.getResources().getDrawable(R.drawable.no_file));
         }
     }
 
     SyncImageLoader.OnImageLoadListener imageLoadListener = new SyncImageLoader.OnImageLoadListener(){
-
         @Override
         public void onImageLoad(Integer t, Drawable drawable) {
 //            ViewHolder holder = (ViewHolder) getItem(t);
             View view = mListView.findViewWithTag(t);
+            String file_name = listData.get(t).get("file_name");
             if(view != null){
-                MyLogger.Log().i("=-=============加载图片了。。。");
-                ImageView iv = (ImageView) view.findViewById(R.id.iv_view_small);
-                iv.setVisibility(View.VISIBLE);
-                iv.setBackground(drawable);
+                //MyLogger.Log().i("=-=============加载图片了。。。");
+                ImageView mImageView =(ImageView)mListView.findViewWithTag(file_name);
+                if(null != mImageView && null != drawable){
+                    mImageView.setImageDrawable(drawable);
+                }
+//                imageview.setBackgroundDrawable(drawable);
             }
         }
         @Override
         public void onError(Integer t) {
 //            ViewHolder holder = (ViewHolder) getItem(t);
             View view = mListView.findViewWithTag(t);
+            String file_name = listData.get(t).get("title");
             if(view != null){
-                MyLogger.Log().i("=-=============加载图错误了。。。");
-                ImageView iv = (ImageView) view.findViewById(R.id.iv_view_small);
-                iv.setVisibility(View.GONE);
+                //MyLogger.Log().i("=-=============加载图错误了。。。");
+                ImageView mImageView =(ImageView)mListView.findViewWithTag(file_name);
+                mImageView.setVisibility(View.VISIBLE);
+                mImageView.setImageDrawable(activity.getResources().getDrawable(R.drawable.no_file));
             }
         }
     };
@@ -189,7 +184,6 @@ public class AttachListViewAdapter extends BaseAdapter {
         public void onScroll(AbsListView view, int firstVisibleItem,
                              int visibleItemCount, int totalItemCount) {
             // TODO Auto-generated method stub
-
         }
     };
 

@@ -659,6 +659,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                     listAttachData.get(choseFileIndex).put("file_name",StaticMember.RemotePath + today + "/" + ImageFileName);
                     MyLogger.Log().i("## 操作成功::: ImageFileName："+ ImageFileName);
 //                    attachListViewAdapter.notifyDataSetChanged();
+
                     attachListViewAdapter.update(choseFileIndex,addAttachListView);
 
                     ImagefilePath = "";
