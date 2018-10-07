@@ -48,6 +48,7 @@ import android.widget.Toast;
 
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.example.administrator.goldaapp.R;
+import com.example.administrator.goldaapp.adapter.LazyAdapter;
 import com.example.administrator.goldaapp.bean.BoardBean;
 import com.example.administrator.goldaapp.bean.JsonBean;
 import com.example.administrator.goldaapp.common.JsonFileReader;
@@ -163,8 +164,9 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
     private MyDialogFileChose myDialogFileChose;// 图片选择对话框
     public static final int NONE = 0;
     private ListView addAttachListView;
-    private AttachListViewAdapter attachListViewAdapter;
+//    private AttachListViewAdapter attachListViewAdapter;
     private ArrayList<Map<String, String>> listAttachData;
+    private LazyAdapter lazyAdapter;
 
     private String[] attachArray = new String[]{};
 
@@ -369,14 +371,59 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
             map.put("file_id",""+i);
             listAttachData.add(map);
         }
-        attachListViewAdapter = new AttachListViewAdapter(activity, AddFileDialogControl, RemoveFileDialogControl,listAttachData,addAttachListView);
-        addAttachListView.setAdapter(attachListViewAdapter);
+//        attachListViewAdapter = new AttachListViewAdapter(activity, AddFileDialogControl, RemoveFileDialogControl,listAttachData,addAttachListView);
+//        addAttachListView.setAdapter(attachListViewAdapter);
+
+        lazyAdapter = new LazyAdapter(activity, AddFileDialogControl, RemoveFileDialogControl,listAttachData,addAttachListView);
+        addAttachListView.setAdapter(lazyAdapter);
+    }
+
+    /**
+     * 保存成功后，清除表单内容
+     */
+    private void clearFrom(){
+        province = "";
+        city = "";
+        area = "";
+
+        icon_type = "";
+        icon_class = "";
+        icon_cnname = "";
+
+        tv_city_area.setText("");
+        edittext_adress.setText("");
+        edittext_area_line.setText("");
+        edittext_company.setText("");
+        edittext_company_address.setText("");
+        edittext_person.setText("");
+        edittext_contact.setText("");
+        edittext_process_contact.setText("");
+        edittext_process_tel.setText("");
+        edittext_email.setText("");
+        tv_icon_type.setText("");
+        edittext_material.setText("");
+        edittext_wt.setText("");
+        edittext_model.setText("");
+        edittext_facenum.setText("");
+        edittext_ad_x.setText("");
+        edittext_ad_y.setText("");
+        edittext_ad_s.setText("");
+        edittext_li_height.setText("");
+
+        // 隐藏保存按钮
+        add_save.setVisibility(View.GONE);
+
+        // 清空图片列表
+        for(int i=0; i<listAttachData.size(); i++){
+            listAttachData.get(i).put("file_name","");
+        }
+        lazyAdapter.notifyDataSetChanged();
     }
 
     /**
      * 添加图片信息选择弹出框
      */
-    private AttachListViewAdapter.IDialogControl AddFileDialogControl = new AttachListViewAdapter.IDialogControl() {
+    private LazyAdapter.IDialogControl AddFileDialogControl = new LazyAdapter.IDialogControl() {
         @Override
         public void onShowDialog() {
             // TODO Auto-generated method stub
@@ -396,7 +443,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
     /**
      * 移除图片信息附件选择弹出框
      */
-    private AttachListViewAdapter.IDialogControl RemoveFileDialogControl = new AttachListViewAdapter.IDialogControl() {
+    private LazyAdapter.IDialogControl RemoveFileDialogControl = new LazyAdapter.IDialogControl() {
         @Override
         public void onShowDialog() {
             // TODO Auto-generated method stub
@@ -427,7 +474,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                 dialog.dismiss();
                 listAttachData.get(position).put("file_path","");
                 listAttachData.get(position).put("file_name","");
-                attachListViewAdapter.notifyDataSetChanged();
+                lazyAdapter.notifyDataSetChanged();
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -660,10 +707,9 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                     listAttachData.get(choseFileIndex).put("file_name",StaticMember.RemotePath + today + "/" + ImageFileName);
                     MyLogger.Log().i("## 操作成功::: ImageFileName："+ ImageFileName);
 
-                    attachListViewAdapter.update(choseFileIndex,addAttachListView);
+//                    attachListViewAdapter.update(choseFileIndex,addAttachListView);
 //                    attachListViewAdapter.update(choseFileIndex);
-
-//                    attachListViewAdapter.notifyDataSetChanged();
+                    lazyAdapter.notifyDataSetChanged();
 
                     ImagefilePath = "";
                     ImageFileName = "";
@@ -694,7 +740,9 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                     // 保存成功
                     showMessage("数据保存成功！");
 
-                    goBoardFragment();
+                    // 清空表单
+                    clearFrom();
+
                 }else if(msg.what == 0){
                     // 保存失败
                     showMessage("数据保存失败，请重试！");
@@ -703,17 +751,6 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
             }
         }
     };
-
-    private void goBoardFragment(){
-//        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager().beginTransaction();
-//        Fragment boardFragment = new FragmentBoard();
-//        Bundle bundle = new Bundle();
-//        bundle.putString("key", "refresh");
-//        boardFragment.setArguments(bundle);
-//        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.content,boardFragment);
-//        fragmentTransaction.addToBackStack(null);
-//        fragmentTransaction.commit();
-    }
 
     /**
      * 设置Android6.0的权限申请
@@ -1260,7 +1297,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         }
     }
 
-    public ArrayList<JsonBean> parseData(String result) {//Gson 解析
+    private ArrayList<JsonBean> parseData(String result) {//Gson 解析
         ArrayList<JsonBean> detail = new ArrayList<>();
         try {
             JSONArray data = new JSONArray(result);
