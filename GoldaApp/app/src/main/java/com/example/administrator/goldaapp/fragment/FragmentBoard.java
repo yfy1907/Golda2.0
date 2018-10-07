@@ -1,8 +1,6 @@
 package com.example.administrator.goldaapp.fragment;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,7 +13,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.administrator.goldaapp.R;
-import com.example.administrator.goldaapp.adapter.BoradRecyclerViewAdapter;
 import com.example.administrator.goldaapp.adapter.EndlessRecyclerOnScrollListener;
 import com.example.administrator.goldaapp.adapter.LoadMoreAdapter;
 import com.example.administrator.goldaapp.bean.BoardBean;
-import com.example.administrator.goldaapp.common.MyLogger;
 import com.example.administrator.goldaapp.jpush.LocalBroadcastManager;
 import com.example.administrator.goldaapp.staticClass.StaticMember;
 import com.example.administrator.goldaapp.utils.CommonTools;
@@ -35,8 +30,6 @@ import com.example.administrator.goldaapp.utils.HttpTools;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class FragmentBoard extends BaseFragment {
 
@@ -80,9 +73,6 @@ public class FragmentBoard extends BaseFragment {
             @Override
             public void onRefresh() {
                 // 刷新数据
-//                listdata.clear();
-//                loadMoreAdapter.notifyDataSetChanged();
-
                 searchAndShow(StaticMember.USER.getUid());
                 // 延时1s关闭下拉刷新
                 swipeRefreshLayout.postDelayed(new Runnable() {
@@ -181,13 +171,6 @@ public class FragmentBoard extends BaseFragment {
         bundle.putSerializable("BoardBean", boardBean);
         intent.putExtras(bundle);
         LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
-    }
-
-
-    public void onItemClick(View view, int postion) {
-        String confirmState = listdata.get(postion).getConfirm_status();
-        String de_id = listdata.get(postion).getDe_id();
-        Log.i("","### confirmState="+confirmState+"; de_id=="+de_id);
     }
 
     public void searchAndShow(final String uid) {

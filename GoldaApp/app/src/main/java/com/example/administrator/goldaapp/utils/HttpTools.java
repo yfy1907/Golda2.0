@@ -61,7 +61,7 @@ public class HttpTools {
      * @param type
      * @return
      */
-    public static List getJson(String url, String param, int type) {
+    public synchronized static List getJson(String url, String param, int type) {
         String urls=url+"?"+param;
         Log.i(TAG, "getJson: "+urls);
 //        String urls="http://cs.jdjk.net/mob_login.php?username=admin&password=111111";

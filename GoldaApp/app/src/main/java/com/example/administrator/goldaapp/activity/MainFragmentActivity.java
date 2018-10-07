@@ -354,6 +354,7 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         //取消注册广播,防止内存泄漏
         try{
             localBroadcastManager.unregisterReceiver( mAdReceiver );
