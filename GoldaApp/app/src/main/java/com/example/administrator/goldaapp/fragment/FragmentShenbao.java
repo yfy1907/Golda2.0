@@ -625,6 +625,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                 try {
                     today = DateHelper.getToday("yyyy-MM-dd");
                     ImageFileName = DateHelper.getToday("yyyyMMddHHmmssSSS")+"_"+StaticMember.USER.getUid()+"_"+ (int) (Math.random() * 1000) + ".jpg";
+                    MyLogger.Log().i("上传文件名称："+ImageFileName+";  文件路径："+today+"; ");
                     upload_file_result = SFTPChannel.getChannel(ImagefilePath, StaticMember.FTPRemotePath + today, ImageFileName, 10000);
                     Message msg = new Message();
                     msg.arg1 = StaticMember.UPLOAD_IMAGE_RESULT;
@@ -658,9 +659,11 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                     listAttachData.get(choseFileIndex).put("file_path",ImagefilePath);
                     listAttachData.get(choseFileIndex).put("file_name",StaticMember.RemotePath + today + "/" + ImageFileName);
                     MyLogger.Log().i("## 操作成功::: ImageFileName："+ ImageFileName);
-//                    attachListViewAdapter.notifyDataSetChanged();
 
                     attachListViewAdapter.update(choseFileIndex,addAttachListView);
+//                    attachListViewAdapter.update(choseFileIndex);
+
+//                    attachListViewAdapter.notifyDataSetChanged();
 
                     ImagefilePath = "";
                     ImageFileName = "";
@@ -865,6 +868,21 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                 Log.e(TAG,"##111--=== path="+path);
                 ImagefilePath = uri.getPath();//获取图片的绝对路径
                 ImageFileName = uri.getScheme();
+
+                if(!checkFileTypes(ImagefilePath)){
+                    showMessage("只能选择图片、PDF格式文件");
+                    return;
+                }
+
+                /**
+                 * 限制选择文件大小： 20971520 （20M）
+                 * 限制选择文件大小：1024*1024*2=2097152
+                 */
+                if(FileUtil.getFileSizes(ImagefilePath) > 2097152){
+                    showMessage("选择文件不能大于2M");
+                    return;
+                }
+
                 Message msg = new Message();
                 msg.arg1 = StaticMember.CHOOSE_IMAGE_RESULT;
                 msg.what = 1;
@@ -876,6 +894,21 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                 ImagefilePath = FileUtil.getPath(activity, uri);//获取图片的绝对路径
                 Log.e(TAG,"##222--=== path="+path);
                 // Toast.makeText(this,path,Toast.LENGTH_SHORT).show();
+
+                if(!checkFileTypes(ImagefilePath)){
+                    showMessage("只能选择图片、PDF格式文件");
+                    return;
+                }
+
+                /**
+                 * 限制选择文件大小： 20971520 （20M）
+                 * 限制选择文件大小：1024*1024*2=2097152
+                 */
+                if(FileUtil.getFileSizes(ImagefilePath) > 2097152){
+                    showMessage("选择文件不能大于2M");
+                    return;
+                }
+
                 Message msg = new Message();
                 msg.arg1 = StaticMember.CHOOSE_IMAGE_RESULT;
                 msg.what = 1;
@@ -885,6 +918,21 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                 path = FileUtil.getRealPathFromURI(uri);
                 ImagefilePath = FileUtil.getRealPathFromURI(uri);//获取图片的绝对路径
                 Log.e(TAG,"##333--=== path="+path);
+
+                if(!checkFileTypes(ImagefilePath)){
+                    showMessage("只能选择图片、PDF格式文件");
+                    return;
+                }
+
+                /**
+                 * 限制选择文件大小： 20971520 （20M）
+                 * 限制选择文件大小：1024*1024*2=2097152
+                 */
+                if(FileUtil.getFileSizes(ImagefilePath) > 2097152){
+                    showMessage("选择文件不能大于2M");
+                    return;
+                }
+
                 Message msg = new Message();
                 msg.arg1 = StaticMember.CHOOSE_IMAGE_RESULT;
                 msg.what = 1;
@@ -894,6 +942,23 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private boolean checkFileTypes(String path){
+        boolean result = false;
+        /*这里要调用这个getPath方法来能过uri获取路径不能直接使用uri.getPath。
+            因为如果选的图片的话直接使用得到的path不是图片的本身路径*/
+        File file = new File(path);
+        /* 取得扩展名 */
+        String end = file.getName().substring(file.getName().lastIndexOf(".") + 1, file.getName	().length()).toLowerCase();
+        if (end.equals("jpg") || end.equals("gif") || end.equals("png") || end.equals("jpeg") || end.equals("bmp")
+                || end.equals("pdf")) {
+            result = true;
+        }else{
+            result = false;
+        }
+
+        return result;
     }
 
     @Override

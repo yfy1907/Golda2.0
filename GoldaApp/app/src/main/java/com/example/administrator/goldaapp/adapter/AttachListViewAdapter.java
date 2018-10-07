@@ -60,16 +60,13 @@ public class AttachListViewAdapter extends BaseAdapter {
     }
 
     public View getView(final int paramInt, View convertView, ViewGroup parent) {
-
         if (mListView == null) {
             mListView = (ListView) parent;
         }
-
         ViewHolder viewHolder = new ViewHolder();
         if (convertView == null) {
             convertView = LayoutInflater.from(activity).inflate(R.layout.attach_item, null);
         }
-
         viewHolder.tv_title = ((TextView) convertView.findViewById(R.id.tv_title));
         viewHolder.iv_add_attach = ((ImageView) convertView.findViewById(R.id.iv_add_attach));
         viewHolder.iv_view_small = ((ImageView) convertView.findViewById(R.id.iv_view_small));
@@ -103,10 +100,28 @@ public class AttachListViewAdapter extends BaseAdapter {
         setData(iv_view_small,index);
     }
 
+//    public void update(int index){
+//        //得到第一个可见item项的位置
+//        int visiblePosition = this.mListView.getFirstVisiblePosition();
+//        //得到指定位置的视图，对listview的缓存机制不清楚的可以去了解下
+//        View view = this.mListView.getChildAt(index - visiblePosition);
+//        ImageView iv_view_small = ((ImageView) view.findViewById(R.id.iv_view_small));
+//        setData(iv_view_small,index);
+//    }
+
+
+    private int lastIndex = -1;
     private void setData(ImageView imageview,int index){
+
         String imageUrl = listData.get(index).get("file_name");
+
+        if(lastIndex == index){
+            return;
+        }
+        lastIndex = index;
+
         if(!StringUtil.isEmpty(imageUrl)){
-            // MyLogger.Log().d("## 加载图片地址====="+imageUrl);
+            MyLogger.Log().w("##@@ 加载图片地址====="+imageUrl);
             if(!imageUrl.contains(StaticMember.ImageURL)){
                 syncImageLoader.loadImage(index,StaticMember.ImageURL+imageUrl,imageLoadListener);
             }else{

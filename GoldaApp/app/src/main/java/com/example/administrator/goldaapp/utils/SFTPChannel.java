@@ -46,12 +46,11 @@ public class SFTPChannel{
             session.connect(); // 通过Session建立链接
             channel = session.openChannel("sftp"); // 打开SFTP通道
             channel.connect(); // 建立SFTP通道的连接
-            Log.e("SFTP连接","Connected successfully to ftpHost = " + ftpHost + ", asftpUserName = " + ftpUserName
-                    + ", returning: " + channel);
+//            Log.e("SFTP连接","Connected successfully to ftpHost = " + ftpHost + ", asftpUserName = " + ftpUserName + ", returning: " + channel);
             //用于创建动态的文件夹
             String[] folders = url.split( "/" );
             String temp="/";
-            Log.e("文件夹目录：",url);
+//            Log.e("文件夹目录：",url);
             for ( String folder : folders ) {
                 if ( folder.length() > 0 ) {
                     try {
@@ -80,7 +79,7 @@ public class SFTPChannel{
 
                 do {
                     read = is.read(buff, 0, buff.length);
-                    Log.e("文件的大小", ""+read);
+//                    Log.e("文件的大小", ""+read);
                     if (read > 0) {
                         out.write(buff, 0, read);
                     }

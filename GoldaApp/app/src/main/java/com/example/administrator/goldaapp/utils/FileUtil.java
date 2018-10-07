@@ -10,6 +10,8 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.text.DecimalFormat;
 
 public class FileUtil {
 
@@ -99,6 +101,60 @@ public class FileUtil {
             }
         }
         return "";
+    }
+
+    /*得到传入文件的大小*/
+    public static long getFileSizes(File f) throws Exception {
+        long s = 0;
+        if (f.exists()) {
+            FileInputStream fis = null;
+            fis = new FileInputStream(f);
+            s = fis.available();
+            fis.close();
+        } else {
+            f.createNewFile();
+            System.out.println("文件夹不存在");
+        }
+        return s;
+    }
+
+    /*得到传入文件的大小*/
+    public static long getFileSizes(String path) {
+        long s = 0;
+        try{
+            File f = new File(path);
+
+            if (f.exists()) {
+                FileInputStream fis = null;
+                fis = new FileInputStream(f);
+                s = fis.available();
+                fis.close();
+            } else {
+                f.createNewFile();
+                System.out.println("文件夹不存在");
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return s;
+    }
+
+    /**
+     * 转换文件大小成KB  M等
+     */
+    public static String FormentFileSize(long fileS) {
+        DecimalFormat df = new DecimalFormat("#.00");
+        String fileSizeString = "";
+        if (fileS < 1024) {
+            fileSizeString = df.format((double) fileS) + "B";
+        } else if (fileS < 1048576) {
+            fileSizeString = df.format((double) fileS / 1024) + "K";
+        } else if (fileS < 1073741824) {
+            fileSizeString = df.format((double) fileS / 1048576) + "M";
+        } else {
+            fileSizeString = df.format((double) fileS / 1073741824) + "G";
+        }
+        return fileSizeString;
     }
 
     /**

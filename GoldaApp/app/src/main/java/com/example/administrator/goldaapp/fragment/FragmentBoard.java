@@ -103,7 +103,6 @@ public class FragmentBoard extends BaseFragment {
                 // 显示加载到底的提示
                 loadMoreAdapter.setLoadState(loadMoreAdapter.LOADING_COMPLETE);
 
-//
 //                if (listdata.size() < 52) {
 //                    searchAndShow(StaticMember.USER.getUid());
 //                    loadMoreAdapter.setLoadState(loadMoreAdapter.LOADING_COMPLETE);
@@ -136,11 +135,16 @@ public class FragmentBoard extends BaseFragment {
 //            Toast.makeText(activity, view.getTag() + "", 1000).show();
 
             int position = (int) view.getTag();
+            showMessage("当前点击列表索引："+position);
             MyLogger.Log().i("## 当前点击列表索引："+position);
 //            String de_id = listdata.get(position).getDe_id();
             goShenbaoFragment(listdata.get(position));
         }
     };
+
+    private void showMessage(String message){
+        Toast.makeText(this.activity,message,Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onResume() {

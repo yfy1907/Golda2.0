@@ -107,7 +107,7 @@ public class SyncImageLoader {
             SoftReference<Drawable> softReference = imageCache.get(mImageUrl);
             final Drawable d = softReference.get();
             if (d != null) {
-                //MyLogger.Log().w("111缓存中存在图片:"+mImageUrl+";=-=-=-=-=-=-="+mt);
+                MyLogger.Log().w("111缓存中存在图片:"+mImageUrl+";=-=-=-=-=-=-="+mt);
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -145,26 +145,27 @@ public class SyncImageLoader {
 
     public static Drawable loadImageFromUrl(String url) throws IOException {
 
+        MyLogger.Log().w("222缓存中存在图片:"+url);
         if(StringUtil.isEmpty(url)){
             return null;
         }
         //Log.i("","###url=="+url);
         if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
             String imagePath = AssistUtil.getMemoryPath() + "uploadImage/"+ MD5Util.MD5(url);
-            MyLogger.Log().e("md5url=="+imagePath);
+            MyLogger.Log().e("##555 在线加载图片："+imagePath);
             File f = new File(imagePath);
             if(f.exists()){
                 FileInputStream fis = new FileInputStream(f);
                 Drawable d = Drawable.createFromStream(fis, "src");
                 fis.close();
-
-                //MyLogger.Log().w("222缓存中存在图片:"+url);
+                MyLogger.Log().e("##666 在线加载图片："+imagePath);
                 return d;
             }
 
             Bitmap bitmap = HttpTools.getUrlImage(url);
+
             if(null != bitmap){
-                //MyLogger.Log().i("##333 在线加载图片："+url);
+
                 Drawable d = new BitmapDrawable(bitmap);
                 return d;
             }else{
@@ -172,7 +173,7 @@ public class SyncImageLoader {
             }
 //            return loadImageFromUrl(url);
         }else{
-            //MyLogger.Log().i("##444 在线加载图片："+url);
+            MyLogger.Log().i("##444 在线加载图片："+url);
             URL m = new URL(url);
             InputStream i = (InputStream) m.getContent();
             Drawable d = Drawable.createFromStream(i, "src");

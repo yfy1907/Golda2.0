@@ -173,8 +173,6 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 holder.board_state_ba.setBackgroundResource(R.drawable.shape_board_button_state2);
             }
 
-
-
             final String confirm_status = board.getConfirm_status(); // 1只能查看， 0可以修改
 
             if("1".equals(confirm_status)){

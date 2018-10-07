@@ -379,6 +379,9 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
                         if(index ==0 ){
                             continue;
                         }
+                        if(adgreenList.get(i).getGis_y() == null || adgreenList.get(i).getGis_x() == null){
+                            continue;
+                        }
                         if (bitmapDescriptorHashMap.containsKey(index)) {
                             Marker m = (Marker) mBaiduMap.addOverlay(new MarkerOptions()
                                     .position(new LatLng(Double.parseDouble(adgreenList.get(i).getGis_y()), Double.parseDouble(adgreenList.get(i).getGis_x())))
@@ -426,6 +429,10 @@ public class FragmentXuncha extends BaseFragment implements BaiduMap.OnMapClickL
                             redFlag = false;
                         }
                         if(!redFlag){
+                            continue;
+                        }
+
+                        if(adredList.get(i).getGis_y() == null || adredList.get(i).getGis_x() == null){
                             continue;
                         }
 
