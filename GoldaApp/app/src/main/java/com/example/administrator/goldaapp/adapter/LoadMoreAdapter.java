@@ -79,17 +79,16 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (viewType == TYPE_ITEM) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_board_listview_item, parent, false);
             RecyclerView.ViewHolder viewHolder = new RecyclerViewHolder(view);
-
-            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @SuppressLint("WrongConstant")
-                @Override
-                public void onClick(View view) {
-//                    Toast.makeText(activity, view.getTag() + "", 1000).show();
-                    if(null != mClickListener){
-                        mClickListener.onItemClick(view);
-                    }
-                }
-            });
+//            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+//                @SuppressLint("WrongConstant")
+//                @Override
+//                public void onClick(View view) {
+////                    Toast.makeText(activity, view.getTag() + "", 1000).show();
+//                    if(null != mClickListener){
+//                        mClickListener.onItemClick(view);
+//                    }
+//                }
+//            });
             return viewHolder;
 
         } else if (viewType == TYPE_FOOTER) {
@@ -182,6 +181,17 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 holder.btn_query.setText(" 处 理 ");
                 holder.btn_query.setBackgroundColor(Color.parseColor("#FF4F99C6"));
             }
+            holder.btn_query.setTag(position);
+            holder.btn_query.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("WrongConstant")
+                @Override
+                public void onClick(View view) {
+//                    Toast.makeText(activity, view.getTag() + "", 1000).show();
+                    if(null != mClickListener){
+                        mClickListener.onItemClick(view);
+                    }
+                }
+            });
 
             Log.e("TAG", "getItemCount: "+dataList.size() );
             holder.itemView.setTag(position);

@@ -3,7 +3,10 @@ package com.example.administrator.goldaapp.activity;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +27,7 @@ import com.example.administrator.goldaapp.fragment.FragmentBoard;
 import com.example.administrator.goldaapp.fragment.FragmentShenbao;
 import com.example.administrator.goldaapp.fragment.FragmentMe;
 import com.example.administrator.goldaapp.fragment.FragmentXuncha;
+import com.example.administrator.goldaapp.jpush.LocalBroadcastManager;
 import com.example.administrator.goldaapp.utils.AppManager;
 
 public class MainFragmentActivity extends AppCompatActivity implements View.OnClickListener {
@@ -51,16 +55,24 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
     private static boolean isExit = false;
     public Handler home_exit_handler = null;
 
+
+    protected LocalBroadcastManager localBroadcastManager ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_main);
 
-
         // android 7.0系统解决拍照的问题
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
         builder.detectFileUriExposure();
+
+
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("MainFragment");
+        localBroadcastManager.registerReceiver(mAdReceiver, intentFilter);
 
 
         AppManager.getAppManager().finishActivity(MainFragmentActivity.class);
@@ -88,6 +100,25 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
             }
         };
     }
+
+    private BroadcastReceiver mAdReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String change = intent.getStringExtra("change");
+            Log.w("","#### change==="+change);
+            if ("shenbao".equals(change)) {
+                // 这地方只能在主线程中刷新UI,子线程中无效，因此用Handler来实现
+                new Handler().post(new Runnable() {
+                    public void run() {
+                        //在这里来写你需要刷新的地方
+                        clickTab(shenbaoFragment);
+                    }
+                });
+            }else if("board".equals(change)){
+
+            }
+        }
+    };
 
     /**
      * 初始化所有fragment
@@ -195,7 +226,7 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
      *
      * @param tabFragment
      */
-    private void clickTab(Fragment tabFragment) {
+    public void clickTab(Fragment tabFragment) {
 
         // 清除上次选中状态
         clearSeleted();
@@ -321,6 +352,16 @@ public class MainFragmentActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        //取消注册广播,防止内存泄漏
+        try{
+            localBroadcastManager.unregisterReceiver( mAdReceiver );
+        }catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
 
 
 

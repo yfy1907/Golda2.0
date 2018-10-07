@@ -7,8 +7,11 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -49,10 +52,12 @@ import android.widget.Toast;
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.example.administrator.goldaapp.R;
 import com.example.administrator.goldaapp.adapter.LazyAdapter;
+import com.example.administrator.goldaapp.bean.AdRedBean;
 import com.example.administrator.goldaapp.bean.BoardBean;
 import com.example.administrator.goldaapp.bean.JsonBean;
 import com.example.administrator.goldaapp.common.JsonFileReader;
 import com.example.administrator.goldaapp.common.MyLogger;
+import com.example.administrator.goldaapp.jpush.LocalBroadcastManager;
 import com.example.administrator.goldaapp.staticClass.StaticMember;
 import com.example.administrator.goldaapp.utils.AssistUtil;
 import com.example.administrator.goldaapp.utils.CaremaUtil;
@@ -184,6 +189,10 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
     private BoardBean boardBean;              // 保存数据对象
     private String de_id = "0";       // 申报ID，0表示新增，否则修改
 
+
+
+    protected MyBroadcastReceiver myBroadcastReceiver ;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         activity = getActivity();
@@ -274,6 +283,63 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         // 锁定屏幕
         this.activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //注册广播
+        registerReceiver();
+    }
+
+    /**
+     * 注册广播接收器
+     */
+    public void registerReceiver() {
+        localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
+        myBroadcastReceiver = new MyBroadcastReceiver();
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("myaction");
+        localBroadcastManager.registerReceiver(myBroadcastReceiver, intentFilter);
+    }
+
+    public class MyBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction() ;
+            Log.i("","## action ==="+action);
+            if ( "myaction".equals( action )){
+                //Log.d( "tttt 消息：" + intent.getStringExtra( "data" )  , "线程： " + Thread.currentThread().getName() ) ;
+                BoardBean boardBean = (BoardBean) intent.getSerializableExtra("BoardBean");
+                if(null != boardBean){
+                    Log.e("","##getDe_id =="+boardBean.getDe_id());
+
+                    de_id = boardBean.getDe_id();
+                    setFormValus(boardBean);
+                }
+//                // 这地方只能在主线程中刷新UI,子线程中无效，因此用Handler来实现
+//                new Handler().post(new Runnable() {
+//                    public void run() {
+//                        //在这里来写你需要刷新的地方
+//
+//                    }
+//                });
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try{
+            if(null != localBroadcastManager){
+                //取消注册广播,防止内存泄漏
+                localBroadcastManager.unregisterReceiver( myBroadcastReceiver );
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     @Override
@@ -382,6 +448,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
      * 保存成功后，清除表单内容
      */
     private void clearFrom(){
+        de_id = "0";
         province = "";
         city = "";
         area = "";
@@ -417,6 +484,83 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         for(int i=0; i<listAttachData.size(); i++){
             listAttachData.get(i).put("file_name","");
         }
+        lazyAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 设置填充表单内容
+     * @param boardBean
+     */
+    private void setFormValus(BoardBean boardBean){
+        province = boardBean.getProvince();
+        city = boardBean.getCity();
+        area = boardBean.getArea();
+
+        icon_type = boardBean.getIcon_type();
+        icon_class = boardBean.getIcon_class();
+        icon_cnname = boardBean.getIcon_cnname();
+
+        tv_city_area.setText(boardBean.getProvince()+" "+boardBean.getCity()+" "+boardBean.getArea());
+        tv_icon_type.setText(boardBean.getIcon_type() + " "+boardBean.getIcon_class()+" "+boardBean.getIcon_cnname());
+
+        edittext_adress.setText(boardBean.getAddress());
+        edittext_area_line.setText(boardBean.getArea_line());
+        edittext_company.setText(boardBean.getCompany());
+        edittext_company_address.setText(boardBean.getCompany_address());
+        edittext_person.setText(boardBean.getPerson());
+        edittext_contact.setText(boardBean.getContact());
+        edittext_process_contact.setText(boardBean.getProcess_contact());
+        edittext_process_tel.setText(boardBean.getProcess_tel());
+        edittext_email.setText(boardBean.getEmail());
+
+        edittext_material.setText(boardBean.getMaterial());
+        edittext_wt.setText(boardBean.getWt());
+        edittext_model.setText(boardBean.getModel());
+        edittext_facenum.setText(boardBean.getFacenum());
+        edittext_ad_x.setText(boardBean.getAd_x());
+        edittext_ad_y.setText(boardBean.getAd_y());
+        edittext_ad_s.setText(boardBean.getAd_s());
+
+        Log.i("","## 设置面积："+boardBean.getAd_s());
+        if(null != boardBean.getAd_x() && !"".equals(boardBean.getAd_x()) && null != boardBean.getAd_y() && !"".equals(boardBean.getAd_y())){
+            double adX = Double.parseDouble(boardBean.getAd_x());
+            double adY = Double.parseDouble(boardBean.getAd_y());
+            double adS = adX * adY;
+            edittext_ad_s.setText(adS+"");
+        }else{
+            edittext_ad_s.setText("");
+        }
+
+        edittext_li_height.setText(boardBean.getLi_height());
+
+        // 1查看，0处理
+        if("1".equals(boardBean.getConfirm_status())){
+            // 查看隐藏保存按钮
+            add_save.setVisibility(View.GONE);
+        }else{
+            // 处理显示保存按钮
+            add_save.setVisibility(View.VISIBLE);
+        }
+        Log.i("","加载信息了啦啦啦啦");
+        // 显示附件列表
+        listAttachData.get(0).put("file_name",boardBean.getB_attach_1());
+        listAttachData.get(1).put("file_name",boardBean.getB_attach_2());
+        listAttachData.get(2).put("file_name",boardBean.getB_attach_3());
+        listAttachData.get(3).put("file_name",boardBean.getB_attach_4());
+        listAttachData.get(4).put("file_name",boardBean.getB_attach_5());
+        listAttachData.get(5).put("file_name",boardBean.getB_attach_6());
+        listAttachData.get(6).put("file_name",boardBean.getB_attach_7());
+        listAttachData.get(7).put("file_name",boardBean.getB_attach_8());
+        listAttachData.get(8).put("file_name",boardBean.getB_attach_9());
+        listAttachData.get(9).put("file_name",boardBean.getB_attach_10());
+        listAttachData.get(10).put("file_name",boardBean.getB_attach_11());
+        listAttachData.get(11).put("file_name",boardBean.getB_attach_12());
+        listAttachData.get(12).put("file_name",boardBean.getB_attach_13());
+        listAttachData.get(13).put("file_name",boardBean.getB_attach_14());
+        listAttachData.get(14).put("file_name",boardBean.getB_attach_15());
+        listAttachData.get(15).put("file_name",boardBean.getB_attach_16());
+        listAttachData.get(16).put("file_name",boardBean.getB_attach_17());
+        listAttachData.get(17).put("file_name",boardBean.getB_attach_18());
         lazyAdapter.notifyDataSetChanged();
     }
 
@@ -515,6 +659,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
 
         boardBean = new BoardBean();
         boardBean.setDe_id(de_id);
+        Log.i("","## 保存的广告牌ID="+de_id);
         boardBean.setUid(StaticMember.USER.getUid());
         boardBean.setProvince(province);
         boardBean.setCity(city);
@@ -719,6 +864,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                         mpDialog.cancel();
                     }
                     showMessage("文件上传失败，请重试！");
+                    add_save.setVisibility(View.VISIBLE);
                 }
             }else if(msg.arg1 == StaticMember.CHOOSE_IMAGE_RESULT){
                 // 拍照或选择图片上传处理
@@ -1043,7 +1189,6 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         }
         super.onDestroyView();
     }
-
 
     private boolean rightAdX  = true; // 广告牌长度是否输入正确
     private boolean rightAdY  = true; // 广告牌宽度是否输入正确

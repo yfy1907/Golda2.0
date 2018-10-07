@@ -3,6 +3,7 @@ package com.example.administrator.goldaapp.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,6 +28,7 @@ import com.example.administrator.goldaapp.adapter.EndlessRecyclerOnScrollListene
 import com.example.administrator.goldaapp.adapter.LoadMoreAdapter;
 import com.example.administrator.goldaapp.bean.BoardBean;
 import com.example.administrator.goldaapp.common.MyLogger;
+import com.example.administrator.goldaapp.jpush.LocalBroadcastManager;
 import com.example.administrator.goldaapp.staticClass.StaticMember;
 import com.example.administrator.goldaapp.utils.CommonTools;
 import com.example.administrator.goldaapp.utils.HttpTools;
@@ -135,9 +137,10 @@ public class FragmentBoard extends BaseFragment {
 //            Toast.makeText(activity, view.getTag() + "", 1000).show();
 
             int position = (int) view.getTag();
-            showMessage("当前点击列表索引："+position);
-            MyLogger.Log().i("## 当前点击列表索引："+position);
+//            showMessage("当前点击列表索引："+position);
 //            String de_id = listdata.get(position).getDe_id();
+//            MyLogger.Log().i("## 当前点击列表索引："+position+";  点击申报ID="+de_id);
+
             goShenbaoFragment(listdata.get(position));
         }
     };
@@ -156,15 +159,28 @@ public class FragmentBoard extends BaseFragment {
 //        }
     }
 
+    /**
+     * 点击查看或处理，跳转到申报界面
+     * @param boardBean
+     */
     private void goShenbaoFragment(BoardBean boardBean){
-//        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager().beginTransaction();
-//        Fragment shenbaoFragment = new FragmentShenbao();
-//        Bundle bundle = new Bundle();
-//        bundle.putSerializable("BoardBean", boardBean);
-//        shenbaoFragment.setArguments(bundle);
-//        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.content,shenbaoFragment);
-//        fragmentTransaction.addToBackStack(null);
-//        fragmentTransaction.commit();
+
+        /**
+         * 通知主界面切换Tab
+         */
+        Intent intent1 = new Intent("MainFragment");
+        intent1.putExtra("change", "shenbao");
+        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent1);
+
+
+        /**
+         * 通知接收数据
+         */
+        Intent intent = new Intent("myaction");
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("BoardBean", boardBean);
+        intent.putExtras(bundle);
+        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
     }
 
 
