@@ -110,11 +110,17 @@ public class LazyAdapter extends BaseAdapter {
         iv_view_small.setTag(loadUrl);
 
         if(!StringUtil.isEmpty(fileUrl)){
-            if(!fileUrl.contains(StaticMember.ImageURL)){
-                loadUrl = StaticMember.ImageURL+fileUrl;
+            String suffix = fileUrl.substring(fileUrl.lastIndexOf(".")+1).toLowerCase();
+            Log.i("","## 文件地址："+fileUrl+"; 后缀名："+suffix);
+            if("pdf".equals(suffix)){
+                // PDF文件显示PDF图标
+                iv_view_small.setImageResource(R.drawable.pdf_icon);
+            }else{
+                if(!fileUrl.contains(StaticMember.ImageURL)){
+                    loadUrl = StaticMember.ImageURL+fileUrl;
+                }
+                imageLoader.DisplayImage(loadUrl, iv_view_small);
             }
-            Log.i("","加载图片地址："+loadUrl);
-            imageLoader.DisplayImage(loadUrl, iv_view_small);
         }else{
             iv_view_small.setImageResource(R.drawable.no_file);
         }

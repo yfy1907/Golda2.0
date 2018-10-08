@@ -178,6 +178,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
     private File imageDir = new File(AssistUtil.getMemoryPath()+"uploadImage/");//照片保存路径文件夹
     private String ImagefilePath = "";  // 上传文件图片路径
     private String ImageFileName = "";  // 上传文件图片名称
+    private String fileSuffix = "jpg";     // 上传文件后缀
     private int choseFileIndex = 0;
     private String path; // 选择文件路径
 
@@ -188,8 +189,6 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
     private ProgressDialog mpDialog;          // 等待框
     private BoardBean boardBean;              // 保存数据对象
     private String de_id = "0";       // 申报ID，0表示新增，否则修改
-
-
 
     protected MyBroadcastReceiver myBroadcastReceiver ;
 
@@ -816,8 +815,13 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
             public void run() {
                 try {
                     today = DateHelper.getToday("yyyy-MM-dd");
-                    ImageFileName = DateHelper.getToday("yyyyMMddHHmmssSSS")+"_"+StaticMember.USER.getUid()+"_"+ (int) (Math.random() * 1000) + ".jpg";
-                    MyLogger.Log().i("上传文件名称："+ImageFileName+";  文件路径："+today+"; ");
+
+                    if(!"".equals(fileSuffix)){
+                        ImageFileName = DateHelper.getToday("yyyyMMddHHmmssSSS")+"_"+StaticMember.USER.getUid()+"_"+ (int) (Math.random() * 1000) + "."+fileSuffix;
+                    }else{
+                        ImageFileName = DateHelper.getToday("yyyyMMddHHmmssSSS")+"_"+StaticMember.USER.getUid()+"_"+ (int) (Math.random() * 1000) + ".jpg";
+                    }
+                    // MyLogger.Log().i("上传文件名称："+ImageFileName+";  文件路径："+today+"; "+";  文件后缀名："+fileSuffix);
                     upload_file_result = SFTPChannel.getChannel(ImagefilePath, StaticMember.FTPRemotePath + today, ImageFileName, 10000);
                     Message msg = new Message();
                     msg.arg1 = StaticMember.UPLOAD_IMAGE_RESULT;
@@ -1137,6 +1141,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         if (end.equals("jpg") || end.equals("gif") || end.equals("png") || end.equals("jpeg") || end.equals("bmp")
                 || end.equals("pdf")) {
             result = true;
+            this.fileSuffix = end;
         }else{
             result = false;
         }

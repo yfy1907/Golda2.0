@@ -106,11 +106,11 @@ public class BoradRecyclerViewAdapter extends RecyclerView.Adapter<BoradRecycler
             holder.board_state_ba.setBackgroundResource(R.drawable.shape_board_button_state2);
         }
 
-        Log.e("TAG", "getItemCount: "+list.size() );
+//        Log.e("TAG", "getItemCount: "+list.size() );
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("","## xxx pos="+position);
+//                Log.i("","## xxx pos="+position);
             }
         });
 

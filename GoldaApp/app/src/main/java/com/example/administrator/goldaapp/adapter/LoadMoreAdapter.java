@@ -193,7 +193,7 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             });
 
-            Log.e("TAG", "getItemCount: "+dataList.size() );
+//            Log.e("TAG", "getItemCount: "+dataList.size() );
             holder.itemView.setTag(position);
 
         } else if (viewHolder instanceof FootViewHolder) {
