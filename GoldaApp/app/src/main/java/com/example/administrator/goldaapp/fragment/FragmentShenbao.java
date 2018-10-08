@@ -776,7 +776,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
                     String dataStr = gson.toJson(boardBean);
                     Log.i("dataStr", " #### dataStr="+dataStr);
                     upload_save_result = HttpTools.sendPostRequest(StaticMember.URL + "mob_declare.php", dataStr);
-                    MyLogger.Log().i("申报项目保存数据结果："+upload_save_result);
+                    // MyLogger.Log().i("申报项目保存数据结果："+upload_save_result);
 
                     Message msg = new Message();
                     msg.arg1 = StaticMember.SAVE_SHENBAO_DATA;
@@ -952,6 +952,7 @@ public class FragmentShenbao extends BaseFragment implements MyDialogFileChose.O
         if (!imageDir.exists()) {
             imageDir.mkdirs();
         }
+        fileSuffix = "jpg";
         String filename = DateHelper.getToday("yyyyMMddHHmmssSSS")+"_"+StaticMember.USER.getUid()+"_"+ (int) (Math.random() * 1000);    //设置日期格式在android中，创建文件时，文件名中不能包含“：”冒号
         File currentImageFile  = new File(imageDir, filename + ".jpg");
         if (!currentImageFile .exists()){
