@@ -474,7 +474,7 @@
                     android:ellipsize="end"
                     android:gravity="center_vertical"
                     android:singleLine="true"
-                    android:hint="非常严重" />
+                    android:hint="无问题" />
 
                 <Spinner
                     android:id="@+id/sp_level"
