@@ -61,7 +61,7 @@ public class HttpTools {
      * @param type
      * @return
      */
-    public synchronized static List getJson(String url, String param, int type) {
+    public static List getJson(String url, String param, int type) {
         String urls=url+"?"+param;
         Log.i(TAG, "getJson: "+urls);
 //        String urls="http://cs.jdjk.net/mob_login.php?username=admin&password=111111";
@@ -286,6 +286,7 @@ public class HttpTools {
         Request.Builder requestBuilder=new Request.Builder().url(url);
         Request request=requestBuilder.build();
         Call call = mOkHttpClient.newCall(request);
+
         try {
             Response response=call.execute();
             InputStream is=response.body().byteStream();
@@ -303,8 +304,10 @@ public class HttpTools {
      */
     public static boolean isNetworkConnected(Context context) {
         if (context != null) {
-            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager
+                    .getActiveNetworkInfo();
             if (mNetworkInfo != null && mNetworkInfo.isConnected()) {
                 // 判断当前网络是否已经连接
                 if (mNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {

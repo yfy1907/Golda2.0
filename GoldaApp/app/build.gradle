@@ -23,10 +23,8 @@ android {
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
-        versionName "Ver2.1.180726"
+        versionName "Ver2.2.181030"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
-        multiDexEnabled true
     }
 
     packagingOptions {
@@ -40,7 +38,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.goldaAppKey
         }
     }
@@ -83,12 +81,4 @@ dependencies {
     compile files('libs/httpcore-4.4.6.jar')
 
     compile files('libs/universal-image-loader-1.9.3.jar')
-
-    // 极光推送
-    compile files('libs/jcore-android-1.2.1.jar')
-    compile files('libs/jpush-android-3.1.3.jar')
-
-    // PickerView选择器
-    compile 'com.contrarywind:Android-PickerView:3.2.5'
-
 }

@@ -39,13 +39,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.administrator.goldaapp.R;
+import com.example.administrator.goldaapp.activity.HomeActivity;
 import com.example.administrator.goldaapp.activity.LoginActivity;
+import com.example.administrator.goldaapp.activity.WelecomeActivity;
 import com.example.administrator.goldaapp.staticClass.StaticMember;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class UpdateManger {
     private SharedPreferences loginInfo;

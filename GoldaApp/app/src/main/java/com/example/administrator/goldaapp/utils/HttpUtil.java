@@ -89,26 +89,6 @@ public class HttpUtil {
         httpClient.getParams().setParameter(HttpProtocolParams.USER_AGENT, User_Agent);
     }
 
-    /**
-     * get请求方式获取网络资源
-     *
-     * @param url
-     * @param httpParams
-     * @return
-     * @throws Exception
-     */
-    public static HttpResponse httpGet(String url, HttpParams httpParams)
-            throws Exception {
-        // 通过HTTPClient来进行下载
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(url);
-        if (httpParams != null) {
-            httpGet.setParams(httpParams);
-        }
-        HttpResponse httpResponse = httpClient.execute(httpGet);
-        return httpResponse;
-    }
-
 
     @SuppressLint("UseValueOf")
     @SuppressWarnings("deprecation")

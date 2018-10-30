@@ -5,7 +5,6 @@ import android.util.Log;
 import com.example.administrator.goldaapp.activity.LoginActivity;
 import com.example.administrator.goldaapp.bean.AdGreenBean;
 import com.example.administrator.goldaapp.bean.AdRedBean;
-import com.example.administrator.goldaapp.bean.BoardBean;
 import com.example.administrator.goldaapp.bean.UserBean;
 import com.example.administrator.goldaapp.staticClass.StaticMember;
 import com.google.gson.Gson;
@@ -36,10 +35,6 @@ public class JsonTools {
 
         try{
             Gson gson=new Gson();
-            if(style == StaticMember.BOARD_LIST){
-                List<BoardBean> boardList = gson.fromJson(json,new TypeToken<List<BoardBean>>(){}.getType());
-                return boardList;
-            }
             if (style== StaticMember.ADLIST_GREEN){
 
                 List<AdGreenBean> greenlist = gson.fromJson(json,new TypeToken<List<AdGreenBean>>(){}.getType());

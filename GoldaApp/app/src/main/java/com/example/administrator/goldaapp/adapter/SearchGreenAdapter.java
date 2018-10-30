@@ -71,7 +71,7 @@ public class SearchGreenAdapter extends RecyclerView.Adapter<SearchGreenAdapter.
         else
             holder.icon.setImageResource(DrawableTool.getValue("green_" + list.get(position).getIcon()));
 
-//        Log.e("TAG", "getItemCount: "+list.size() );
+        Log.e("TAG", "getItemCount: "+list.size() );
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

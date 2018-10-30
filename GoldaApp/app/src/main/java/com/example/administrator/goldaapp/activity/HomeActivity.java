@@ -162,6 +162,7 @@ public class HomeActivity extends AppCompatActivity implements BaiduMap.OnMapCli
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.e("MainActivity", "收到退出登录的广播");
             unregisterReceiver(this); // 这句话必须要写要不会报错，不写虽然能关闭，会报一堆错
             finish();
         }
@@ -860,7 +861,8 @@ public class HomeActivity extends AppCompatActivity implements BaiduMap.OnMapCli
                     .direction(location.getDirection()).latitude(location.getLatitude())
                     .longitude(location.getLongitude()).build();
             mBaiduMap.setMyLocationData(locData);
-            myLocationLL = new LatLng(location.getLatitude(), location.getLongitude());
+            myLocationLL = new LatLng(location.getLatitude(),
+                    location.getLongitude());
             province = location.getProvince();
             city = location.getCity();
             district = location.getDistrict();
@@ -891,6 +893,7 @@ public class HomeActivity extends AppCompatActivity implements BaiduMap.OnMapCli
 
     @Override
     protected void onDestroy() {
+        Log.e("MainActivity", "OnDestory() Called");
         super.onDestroy();
         // 退出时销毁定位
         if(null != mLocClient){

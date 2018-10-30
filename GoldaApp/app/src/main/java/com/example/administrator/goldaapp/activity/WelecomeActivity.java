@@ -141,12 +141,12 @@ public class WelecomeActivity extends Activity implements ActivityCompat.OnReque
     }
 
 
-//    private void ToLoginActivity(){
-//        Intent i = new Intent(WelecomeActivity.this,HomeActivity.class);
-//        startActivity(i);
-//        finish();
-//        overridePendingTransition(R.anim.anim_in,R.anim.anim_out);
-//    }
+    private void ToLoginActivity(){
+        Intent i = new Intent(WelecomeActivity.this,HomeActivity.class);
+        startActivity(i);
+        finish();
+        overridePendingTransition(R.anim.anim_in,R.anim.anim_out);
+    }
 
     private void skipLogin()
     {
@@ -156,7 +156,7 @@ public class WelecomeActivity extends Activity implements ActivityCompat.OnReque
         {
             UserBean user = new UserBean();
             user.setUid(loginInfo.getString("uid",""));
-            user.setRealname(loginInfo.getString("realname",""));
+            user.setUsername(loginInfo.getString("username",""));
             user.setResideprovince(loginInfo.getString("resideprovince",""));
             user.setResidecity(loginInfo.getString("residecity",""));
             user.setResidedist(loginInfo.getString("residedist",""));
@@ -172,8 +172,7 @@ public class WelecomeActivity extends Activity implements ActivityCompat.OnReque
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    //Intent i = new Intent(WelecomeActivity.this,HomeActivity.class);
-                    Intent i = new Intent(WelecomeActivity.this,MainFragmentActivity.class);
+                    Intent i = new Intent(WelecomeActivity.this,HomeActivity.class);
                     startActivity(i);
                     finish();
                     overridePendingTransition(R.anim.anim_in,R.anim.anim_out);
@@ -202,7 +201,7 @@ public class WelecomeActivity extends Activity implements ActivityCompat.OnReque
             verName = BuildConfig.VERSION_NAME;
             Log.i(TAG,"verName===="+verName);
             if(null != tv_verName){
-                tv_verName.setText(verName+"（演示）");
+                tv_verName.setText(verName);
             }
         }catch (Exception e) {
             e.printStackTrace();

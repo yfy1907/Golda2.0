@@ -13,9 +13,4 @@
     <string name="cemail">E-mail: golda_ad@126.com</string>
     <string name="cnet">网址：www.jdjk.net</string>
     <string name="caddress">地址：南京市虎踞南路10号4楼</string>
-
-    <string name="main_fragment_menu_1">申报</string>
-    <string name="main_fragment_menu_2">巡查</string>
-    <string name="main_fragment_menu_3">广告牌</string>
-    <string name="main_fragment_menu_4">我</string>
 </resources>

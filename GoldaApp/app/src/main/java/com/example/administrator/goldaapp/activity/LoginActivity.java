@@ -54,7 +54,7 @@ public class LoginActivity extends Activity {
     private String psw="";
     private List<UserBean> userList = new ArrayList<UserBean>();
     private SharedPreferences loginInfo;
-    private boolean isAutoLogin = true;
+//    private boolean isAutoLogin = true;
     private boolean isPwVisiable = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,10 +67,10 @@ public class LoginActivity extends Activity {
 
     private void init(){
         loginInfo = getSharedPreferences("setting", Context.MODE_PRIVATE);
-        String user_name=loginInfo.getString("name","");
-        String user_password=loginInfo.getString("password","");
-        et_username.setText(user_name);
-        et_psw.setText(user_password);
+//        String user_name=loginInfo.getString("name","");
+//        String user_password=loginInfo.getString("password","");
+//        et_username.setText(user_name);
+//        et_psw.setText(user_password);
     }
     @OnTextChanged(R.id.et_username)
     public void toUsername(CharSequence editText){
@@ -107,12 +107,12 @@ public class LoginActivity extends Activity {
      */
     @OnClick(R.id.iv_skip)
     public void skipLogin(){
-        if (isAutoLogin)
-            iv_skip.setImageResource(R.drawable.icon_unskip_login);
-        else
-            iv_skip.setImageResource(R.drawable.icon_skip_login);
-
-        isAutoLogin = !isAutoLogin;
+//        if (isAutoLogin)
+//            iv_skip.setImageResource(R.drawable.icon_unskip_login);
+//        else
+//            iv_skip.setImageResource(R.drawable.icon_skip_login);
+//
+//        isAutoLogin = !isAutoLogin;
     }
     @OnClick(R.id.iv_user_clear)
     public void delUsername(){
@@ -156,10 +156,10 @@ public class LoginActivity extends Activity {
                     return true;
                 }
             }
-            if (mNetworkInfo != null) {
+//            if (mNetworkInfo != null) {
 
-                return mNetworkInfo.isConnected();
-            }
+//                return mNetworkInfo.isConnected();
+//            }
         }
         return false;
     }
@@ -203,32 +203,32 @@ public class LoginActivity extends Activity {
                                 "登录失败，请检查用户名或密码是否正确",
                                 Toast.LENGTH_SHORT).show();
                     }else {
-                        if (isAutoLogin==true) {
-
-                            SharedPreferences.Editor editor = loginInfo.edit();
-                            editor.putBoolean("auto_login", isAutoLogin);
-                            editor.putString("name", et_username.getText().toString());
-                            editor.putString("password", et_psw.getText().toString());
-                            editor.putString("uid", userList.get(0).getUid());
-                            editor.putString("realname", userList.get(0).getRealname());
-                            editor.putString("resideprovince", userList.get(0).getResideprovince());
-                            editor.putString("residecity", userList.get(0).getResidecity());
-                            editor.putString("residedist", userList.get(0).getResidedist());
-                            editor.putString("residecommunity", userList.get(0).getResidecommunity());
-                            editor.commit();
-                        }else {
-                            SharedPreferences.Editor editor = loginInfo.edit();
-                            editor.putBoolean("auto_login", isAutoLogin);
-                            editor.putString("name","" );
-                            editor.putString("password","");
-                            editor.putString("uid", "");
-                            editor.putString("realname", "");
-                            editor.putString("resideprovince","");
-                            editor.putString("residecity", "");
-                            editor.putString("residedist", "");
-                            editor.putString("residecommunity","");
-                            editor.commit();
-                        }
+//                        if (isAutoLogin==true) {
+//
+//                            SharedPreferences.Editor editor = loginInfo.edit();
+//                            editor.putBoolean("auto_login", isAutoLogin);
+//                            editor.putString("name", et_username.getText().toString());
+//                            editor.putString("password", et_psw.getText().toString());
+//                            editor.putString("uid", userList.get(0).getUid());
+//                            editor.putString("username", userList.get(0).getUsername());
+//                            editor.putString("resideprovince", userList.get(0).getResideprovince());
+//                            editor.putString("residecity", userList.get(0).getResidecity());
+//                            editor.putString("residedist", userList.get(0).getResidedist());
+//                            editor.putString("residecommunity", userList.get(0).getResidecommunity());
+//                            editor.commit();
+//                        }else {
+//                            SharedPreferences.Editor editor = loginInfo.edit();
+//                            editor.putBoolean("auto_login", isAutoLogin);
+//                            editor.putString("name","" );
+//                            editor.putString("password","");
+//                            editor.putString("uid", "");
+//                            editor.putString("username", "");
+//                            editor.putString("resideprovince","");
+//                            editor.putString("residecity", "");
+//                            editor.putString("residedist", "");
+//                            editor.putString("residecommunity","");
+//                            editor.commit();
+//                        }
 
                         if(null == userList.get(0)){
                             Toast.makeText(LoginActivity.this, "登录失败，当前账号信息异常", Toast.LENGTH_SHORT).show();
@@ -241,19 +241,18 @@ public class LoginActivity extends Activity {
                         }
 
                         SharedPreferences.Editor editor = loginInfo.edit();
-                        editor.putBoolean("auto_login", isAutoLogin);
+//                        editor.putBoolean("auto_login", isAutoLogin);
                         editor.putString("name", et_username.getText().toString());
                         editor.putString("password", et_psw.getText().toString());
                         editor.putString("uid", userList.get(0).getUid());
-                        editor.putString("realname", userList.get(0).getRealname());
+                        editor.putString("username", userList.get(0).getUsername());
                         editor.putString("resideprovince", userList.get(0).getResideprovince());
                         editor.putString("residecity", userList.get(0).getResidecity());
                         editor.putString("residedist", userList.get(0).getResidedist());
                         editor.putString("residecommunity", userList.get(0).getResidecommunity());
                         editor.commit();
 
-                        // Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                        Intent intent = new Intent(LoginActivity.this, MainFragmentActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                         startActivity(intent);
                         finish();
                         overridePendingTransition(R.anim.anim_in,R.anim.anim_out);

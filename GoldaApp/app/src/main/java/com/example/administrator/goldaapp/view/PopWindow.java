@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import com.example.administrator.goldaapp.R;
 import com.example.administrator.goldaapp.activity.GreenMarkerDetail;
-import com.example.administrator.goldaapp.activity.MainFragmentActivity;
+import com.example.administrator.goldaapp.activity.HomeActivity;
 import com.example.administrator.goldaapp.activity.RedMarkerDetail;
 import com.example.administrator.goldaapp.bean.MarkerInfo;
 import com.example.administrator.goldaapp.utils.DrawableTool;
@@ -192,7 +192,7 @@ public class PopWindow extends PopupWindow implements OnItemClickListener {
             bundle.putSerializable("AdRedBean", arrays.get(arg2).getAd_red());
             bundle.putInt("id", arrays.get(arg2).getId());
             intent.putExtras(bundle);
-            ((MainFragmentActivity)mContext).startActivityForResult(intent, 1002);
+            ((HomeActivity)mContext).startActivityForResult(intent, 1002);
 
         } else if (arrays.get(arg2).getType() == "green") {
 
@@ -201,7 +201,7 @@ public class PopWindow extends PopupWindow implements OnItemClickListener {
             bundle.putSerializable("AdGreenBean", arrays.get(arg2).getAd_green());
             bundle.putInt("id", arrays.get(arg2).getId());
             intent.putExtras(bundle);
-            ((MainFragmentActivity)mContext).startActivityForResult(intent, 1002);
+            ((HomeActivity)mContext).startActivityForResult(intent, 1002);
         }
 
     }
