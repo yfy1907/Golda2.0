@@ -50,6 +50,7 @@ import com.example.administrator.goldaapp.utils.HttpTools;
 import com.example.administrator.goldaapp.utils.MultiTool;
 import com.example.administrator.goldaapp.utils.PhotoBitmapUtils;
 import com.example.administrator.goldaapp.utils.SFTPChannel;
+import com.example.administrator.goldaapp.view.ReSpinner;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -84,16 +85,18 @@ public class RedMarkerDetail extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.image_progress)
     ProgressBar image_progress;
+
     @BindView(R.id.type)
-    Spinner sp_type;
+    ReSpinner sp_type;
     @BindView(R.id.classe)
-    Spinner sp_classe;
+    ReSpinner sp_classe;
     @BindView(R.id.kind)
-    Spinner sp_kind;
+    ReSpinner sp_kind;
     @BindView(R.id.sp_level)
-    Spinner sp_level;
+    ReSpinner sp_level;
     @BindView(R.id.sp_belong)
-    Spinner sp_belong;
+    ReSpinner sp_belong;
+
     @BindView(R.id.dateline)
     TextView tv_dateline;
     @BindView(R.id.tv_id)
@@ -328,13 +331,14 @@ public class RedMarkerDetail extends AppCompatActivity {
         sp_level.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.i("","### onItemSeect Listener--------------111");
                 if (sp_count < 5) {
                     sp_count++;
                     return;
                 }
+                Log.i("","### onItemSeect Listener--------------222");
                 tv_level.setText(sp_level.getSelectedItem().toString());
                 toSave = true;
-//                iv_save.setVisibility(View.VISIBLE);
                 add_save.setVisibility(View.VISIBLE);
             }
 
