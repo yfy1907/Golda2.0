@@ -331,12 +331,10 @@ public class RedMarkerDetail extends AppCompatActivity {
         sp_level.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.i("","### onItemSeect Listener--------------111");
                 if (sp_count < 5) {
                     sp_count++;
                     return;
                 }
-                Log.i("","### onItemSeect Listener--------------222");
                 tv_level.setText(sp_level.getSelectedItem().toString());
                 toSave = true;
                 add_save.setVisibility(View.VISIBLE);

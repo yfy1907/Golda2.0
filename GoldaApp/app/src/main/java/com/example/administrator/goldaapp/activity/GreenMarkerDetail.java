@@ -50,6 +50,7 @@ import com.example.administrator.goldaapp.utils.HttpTools;
 import com.example.administrator.goldaapp.utils.MultiTool;
 import com.example.administrator.goldaapp.utils.SFTPChannel;
 import com.example.administrator.goldaapp.view.PinchImageView;
+import com.example.administrator.goldaapp.view.ReSpinner;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -86,7 +87,7 @@ public class GreenMarkerDetail extends AppCompatActivity {
     @BindView(R.id.tv_question)
     TextView tv_question;
     @BindView(R.id.sp_level)
-    Spinner sp_level;
+    ReSpinner sp_level;
     @BindView(R.id.tv_level)
     TextView tv_level;
     @BindView(R.id.toolbar)
@@ -233,7 +234,6 @@ public class GreenMarkerDetail extends AppCompatActivity {
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     tv_level.setText(sp_level.getSelectedItem().toString());
                     toSave = true;
-//                    iv_save.setVisibility(View.VISIBLE);
                     add_save.setVisibility(View.VISIBLE);
                 }
 

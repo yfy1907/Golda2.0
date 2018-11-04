@@ -1,5 +1,5 @@
 签名密码： android
-
+别名: android
 
 C:\fadb>keytool -v -list -keystore goldaAppKey.jks
 输入密钥库口令:
